@@ -1,16 +1,16 @@
 import Chart from "chart.js/auto";
 import {getForecastState, setCurrentSite, subscribeToForecastState} from "./pfm-state.js";
+import {formatDateTime, subscribeToLocale, t} from "./i18n.js";
 
 const CHART_LINE_COLOR = "#2563eb";
 
 function formatShortLabel(isoString) {
   const normalized = isoString.endsWith("Z") ? isoString : `${isoString}Z`;
-  return new Date(normalized).toLocaleString("en-US", {
+  return formatDateTime(normalized, {
     month: "short",
     day: "numeric",
     hour: "numeric",
-    hour12: true,
-    timeZone: "America/Los_Angeles"
+    hour12: true
   });
 }
 
@@ -20,22 +20,20 @@ export function renderForecastChart() {
 
   const eyebrow = document.createElement("p");
   eyebrow.className = "chart-eyebrow";
-  eyebrow.textContent = "Detailed Forecast";
 
   const title = document.createElement("h2");
   title.className = "chart-title";
-  title.textContent = "Sewage concentration";
 
   const canvas = document.createElement("canvas");
   canvas.className = "chart-canvas";
 
   const empty = document.createElement("div");
   empty.className = "chart-empty";
-  empty.textContent = "Forecast chart will appear once site assets are available.";
 
   wrapper.append(eyebrow, title, canvas, empty);
 
   let chart = null;
+  let currentState = null;
 
   const destroyChart = () => {
     if (chart) {
@@ -44,12 +42,17 @@ export function renderForecastChart() {
     }
   };
 
-  subscribeToForecastState((state) => {
-    title.textContent = state.sites.names.length
-      ? `Sewage concentration — ${state.sites.names[state.currentSite]}`
-      : "Sewage concentration";
+  const render = (state) => {
+    if (state) currentState = state;
+    if (!currentState) return;
 
-    if (!state.sites.names.length || !state.sites.l10.length) {
+    eyebrow.textContent = t("detailedForecast");
+    title.textContent = currentState.sites.names.length
+      ? t("sewageConcentrationForSite", {site: currentState.sites.names[currentState.currentSite]})
+      : t("sewageConcentration");
+    empty.textContent = t("chartUnavailable");
+
+    if (!currentState.sites.names.length || !currentState.sites.l10.length) {
       canvas.style.display = "none";
       empty.style.display = "block";
       destroyChart();
@@ -63,10 +66,10 @@ export function renderForecastChart() {
       chart = new Chart(canvas, {
         type: "line",
         data: {
-          labels: state.times.map(formatShortLabel),
-          datasets: state.sites.names.map((name, index) => ({
+          labels: currentState.times.map(formatShortLabel),
+          datasets: currentState.sites.names.map((name, index) => ({
             label: name,
-            data: state.sites.l10.map((row) => row[index]),
+            data: currentState.sites.l10.map((row) => row[index]),
             borderColor: CHART_LINE_COLOR,
             backgroundColor: "transparent",
             borderWidth: 2.5,
@@ -154,13 +157,16 @@ export function renderForecastChart() {
       });
     }
 
-    chart.data.labels = state.times.map(formatShortLabel);
+    chart.data.labels = currentState.times.map(formatShortLabel);
     chart.data.datasets.forEach((dataset, index) => {
-      dataset.data = state.sites.l10.map((row) => row[index]);
-      chart.setDatasetVisibility(index, index === state.currentSite);
+      dataset.data = currentState.sites.l10.map((row) => row[index]);
+      chart.setDatasetVisibility(index, index === currentState.currentSite);
     });
     chart.update("none");
-  });
+  };
+
+  subscribeToForecastState(render);
+  subscribeToLocale(() => render());
 
   return wrapper;
 }

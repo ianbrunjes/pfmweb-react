@@ -1,6 +1,7 @@
 import {setCurrentSite, subscribeToForecastState} from "./pfm-state.js";
+import {subscribeToLocale, t} from "./i18n.js";
 
-const RISK_LABELS = ["Low", "Medium", "High"];
+const RISK_LABEL_KEYS = ["lowRisk", "mediumRisk", "highRisk"];
 const RISK_ICONS = [
   '<path fill="palegreen" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path>',
   '<path fill="gold" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path>',
@@ -22,35 +23,41 @@ export function renderSiteCards() {
 
   const label = document.createElement("p");
   label.className = "site-panel-label";
-  label.textContent = "Select Location";
 
   const list = document.createElement("div");
   list.className = "site-risk-list";
 
   wrapper.append(label, list);
 
-  subscribeToForecastState((state) => {
+  let currentState = null;
+
+  const render = (state) => {
+    if (state) currentState = state;
+    if (!currentState) return;
+
+    label.textContent = t("selectLocation");
     list.innerHTML = "";
 
-    if (!state.sites.names.length) {
+    if (!currentState.sites.names.length) {
       const empty = document.createElement("div");
       empty.className = "site-detail-card site-detail-empty";
       empty.innerHTML = `
-        <p class="site-empty-title">Monitoring sites unavailable</p>
-        <p class="site-empty-copy">Generate the upstream forecast JSON assets to populate per-site risk and concentration data.</p>
+        <p class="site-empty-title">${t("monitoringUnavailable")}</p>
+        <p class="site-empty-copy">${t("monitoringUnavailableCopy")}</p>
       `;
       list.append(empty);
       return;
     }
 
-    state.sites.names.toReversed().forEach((name, reverseIndex) => {
-      const index = state.sites.names.length - 1 - reverseIndex;
-      const risk = state.sites.risk[state.currentFrame]?.[index] ?? 0;
+    currentState.sites.names.toReversed().forEach((name, reverseIndex) => {
+      const index = currentState.sites.names.length - 1 - reverseIndex;
+      const risk = currentState.sites.risk[currentState.currentFrame]?.[index] ?? 0;
+      const riskLabel = t(RISK_LABEL_KEYS[risk] ?? "unknownRisk");
       const card = document.createElement("button");
       card.className = `site-risk-card risk-${risk}`;
       card.type = "button";
-      card.dataset.active = String(index === state.currentSite);
-      card.setAttribute("aria-label", `${name}: ${RISK_LABELS[risk] ?? "Unknown"} risk`);
+      card.dataset.active = String(index === currentState.currentSite);
+      card.setAttribute("aria-label", t("siteRiskLabel", {site: name, risk: riskLabel}));
       card.addEventListener("pointerdown", () => setCurrentSite(index));
       card.addEventListener("click", () => setCurrentSite(index));
 
@@ -61,7 +68,10 @@ export function renderSiteCards() {
       card.append(createRiskIcon(risk), nameElement);
       list.append(card);
     });
-  });
+  };
+
+  subscribeToForecastState(render);
+  subscribeToLocale(() => render());
 
   return wrapper;
 }

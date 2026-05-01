@@ -1,5 +1,6 @@
 import {formatUpdatedTime, subscribeToForecastState} from "./pfm-state.js";
 import {renderInfoModal} from "./info-modal.js";
+import {subscribeToLocale, t} from "./i18n.js";
 
 export function renderTitleCard() {
   const wrapper = document.createElement("section");
@@ -16,15 +17,18 @@ export function renderTitleCard() {
 
   const title = document.createElement("h1");
   title.className = "title-card-heading";
-  title.textContent = "Pathogen Forecast Model Phase 1";
 
   copy.append(eyebrow, title);
   content.append(copy, renderInfoModal());
   wrapper.append(content);
 
-  subscribeToForecastState(() => {
-    eyebrow.textContent = `San Diego / Tijuana Coast · ${formatUpdatedTime()}`;
-  });
+  const renderText = () => {
+    title.textContent = t("title");
+    eyebrow.textContent = `${t("coastLabel")} · ${formatUpdatedTime()}`;
+  };
+
+  subscribeToForecastState(renderText);
+  subscribeToLocale(renderText);
 
   return wrapper;
 }

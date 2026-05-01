@@ -6,6 +6,7 @@ import {
   setCurrentFrame,
   subscribeToForecastState
 } from "./pfm-state.js";
+import {subscribeToLocale, t} from "./i18n.js";
 
 export function renderTimeSlider() {
   const wrapper = document.createElement("section");
@@ -13,11 +14,9 @@ export function renderTimeSlider() {
 
   const label = document.createElement("p");
   label.className = "slider-label";
-  label.textContent = "Forecast Animation";
 
   const instructions = document.createElement("p");
   instructions.className = "slider-instructions";
-  instructions.textContent = 'Click "Play" to animate the forecast, move the slider to scrub through time, and select a shoreline site to view the detailed forecast at right.';
 
   const dateValue = document.createElement("p");
   dateValue.className = "slider-date-value";
@@ -37,11 +36,19 @@ export function renderTimeSlider() {
 
   let timer = null;
   let playing = false;
+  let currentFrame = 0;
 
   const renderButtonIcon = () => {
     const svg = icon(playing ? faPause : faPlay, {styles: {height: "1rem"}});
     playButton.innerHTML = svg.html.join("");
-    playButton.setAttribute("aria-label", playing ? "Pause forecast playback" : "Play forecast playback");
+    playButton.setAttribute("aria-label", playing ? t("pauseForecast") : t("playForecast"));
+  };
+
+  const renderText = () => {
+    label.textContent = t("forecastAnimation");
+    instructions.textContent = t("sliderInstructions");
+    dateValue.textContent = formatForecastTime(currentFrame);
+    renderButtonIcon();
   };
 
   const stopPlayback = () => {
@@ -94,12 +101,14 @@ export function renderTimeSlider() {
   });
 
   subscribeToForecastState((state) => {
+    currentFrame = state.currentFrame;
     slider.max = String(Math.max(0, getFrameCount() - 1));
     slider.value = String(state.currentFrame);
     dateValue.textContent = formatForecastTime(state.currentFrame);
   });
+  subscribeToLocale(renderText);
 
-  renderButtonIcon();
+  renderText();
   controls.append(playButton, slider);
   wrapper.append(label, dateValue, controls, instructions);
   return wrapper;

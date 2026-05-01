@@ -5,6 +5,7 @@ import {
   setCurrentSite,
   subscribeToForecastState
 } from "./pfm-state.js";
+import {subscribeToLocale, t} from "./i18n.js";
 
 const RISK_COLORS = ["palegreen", "gold", "firebrick"];
 
@@ -21,9 +22,8 @@ function waitForMapLayout(element) {
   });
 }
 
-// TODO fix this color bar
 function addColorbar(map) {
-  const html = `
+  const renderHtml = () => `
     <div class="map-colorbar">
       <div class="map-colorbar-labels">
         <div style="top: 56px;">0.001%</div>
@@ -32,21 +32,26 @@ function addColorbar(map) {
         <div style="top: 150px;">≈ 0%</div>
       </div>
       <div class="map-colorbar-bar"></div>
-      <div class="map-colorbar-title">Sewage conc.</div>
+      <div class="map-colorbar-title">${t("mapColorbarTitle")}</div>
     </div>
   `;
 
+  let container = null;
   const ColorbarControl = L.Control.extend({
     options: {position: "bottomleft"},
     onAdd() {
       const div = L.DomUtil.create("div");
-      div.innerHTML = html;
+      div.innerHTML = renderHtml();
       L.DomEvent.disableClickPropagation(div);
+      container = div;
       return div;
     }
   });
 
   new ColorbarControl().addTo(map);
+  subscribeToLocale(() => {
+    if (container) container.innerHTML = renderHtml();
+  });
 }
 
 export async function renderSanDiegoMap() {
@@ -71,6 +76,7 @@ export async function renderSanDiegoMap() {
       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
       {
         maxZoom: 14,
+        minZoom: 10,
         attribution: "Tiles &copy; Esri"
       }
     ).addTo(map);

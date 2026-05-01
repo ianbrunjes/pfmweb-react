@@ -1,4 +1,5 @@
 import {loadForecastAssets} from "./pfm-assets.js";
+import {formatDateTime, t} from "./i18n.js";
 
 const HOUR_MS = 60 * 60 * 1000;
 const DEFAULT_FRAME_COUNT = 121;
@@ -48,7 +49,7 @@ function normalizeIso(isoString) {
 }
 
 function formatDisplayTime(isoString) {
-  return new Date(normalizeIso(isoString)).toLocaleString("en-US", {
+  return formatDateTime(normalizeIso(isoString), {
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -87,7 +88,7 @@ export function formatForecastTime(frameIndex = currentFrame) {
 
 export function formatUpdatedTime() {
   const first = state.times[0];
-  return first ? `Updated ${formatDisplayTime(first)}` : "Forecast time unavailable";
+  return first ? t("updated", {time: formatDisplayTime(first)}) : t("forecastTimeUnavailable");
 }
 
 export function getFrameCount() {
