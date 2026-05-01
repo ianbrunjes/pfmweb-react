@@ -1,0 +1,9 @@
+.DS_Store
+node_modules
+.observablehq
+dist
+src/pfm-data/map
+src/pfm-data/times.json
+src/pfm-data/sites.json
+src/pfm-data/shoreline.json
+src/data/web_data_latest.nc
