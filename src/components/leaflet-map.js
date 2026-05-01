@@ -2,6 +2,7 @@ import L from "leaflet";
 import {
   getForecastState,
   getFrameUrl,
+  setCurrentSite,
   subscribeToForecastState
 } from "./pfm-state.js";
 
@@ -109,7 +110,6 @@ export async function renderSanDiegoMap() {
       shoreLayer = L.layerGroup(circles).addTo(map);
     };
 
-    //TODO clickable site markers to select site
     const buildSiteMarkers = (snapshot) => {
       if (siteLayer) siteLayer.remove();
       if (!snapshot.sites.names.length) return;
@@ -117,19 +117,31 @@ export async function renderSanDiegoMap() {
       const markers = snapshot.sites.names.map((name, index) => {
         const risk = snapshot.sites.risk[snapshot.currentFrame]?.[index] ?? 0;
 
-        return L.circleMarker([snapshot.sites.lats[index], snapshot.sites.lons[index]], {
+        const marker = L.circleMarker([snapshot.sites.lats[index], snapshot.sites.lons[index]], {
           pane: "siteRiskPane",
           radius: 6,
           color: "#fff",
           weight: 2,
           fillColor: RISK_COLORS[risk] ?? "#888",
-          fillOpacity: 1
+          fillOpacity: 1,
+          interactive: true
         }).bindTooltip(name, {
           permanent: true,
           direction: "right",
           offset: [6, 0],
-          className: "site-label"
+          className: "site-label",
+          interactive: true
         });
+
+        marker.on("click", () => setCurrentSite(index));
+        marker.on("tooltipopen", (event) => {
+          const tooltipElement = event.tooltip.getElement();
+          if (!tooltipElement) return;
+          L.DomEvent.on(tooltipElement, "click", L.DomEvent.stopPropagation);
+          L.DomEvent.on(tooltipElement, "click", () => setCurrentSite(index));
+        });
+
+        return marker;
       });
 
       siteLayer = L.layerGroup(markers).addTo(map);

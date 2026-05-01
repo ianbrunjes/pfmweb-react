@@ -15,6 +15,10 @@ export function renderTimeSlider() {
   label.className = "slider-label";
   label.textContent = "Forecast Animation";
 
+  const instructions = document.createElement("p");
+  instructions.className = "slider-instructions";
+  instructions.textContent = 'Click "Play" to animate the forecast, move the slider to scrub through time, and select a shoreline site to view the detailed forecast at right.';
+
   const dateValue = document.createElement("p");
   dateValue.className = "slider-date-value";
 
@@ -97,6 +101,6 @@ export function renderTimeSlider() {
 
   renderButtonIcon();
   controls.append(playButton, slider);
-  wrapper.append(label, dateValue, controls);
+  wrapper.append(label, dateValue, controls, instructions);
   return wrapper;
 }
