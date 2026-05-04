@@ -44,6 +44,17 @@ function notify() {
   for (const listener of listeners) listener(snapshot);
 }
 
+function preserveScrollPosition() {
+  if (typeof window === "undefined") return null;
+
+  const x = window.scrollX;
+  const y = window.scrollY;
+  return () => {
+    window.scrollTo(x, y);
+    window.requestAnimationFrame(() => window.scrollTo(x, y));
+  };
+}
+
 function normalizeIso(isoString) {
   return isoString.endsWith("Z") ? isoString : `${isoString}Z`;
 }
@@ -97,14 +108,24 @@ export function getFrameCount() {
 
 export function setCurrentFrame(nextFrame) {
   const max = Math.max(0, state.times.length - 1);
-  currentFrame = Math.max(0, Math.min(max, Number(nextFrame)));
+  const frame = Math.max(0, Math.min(max, Number(nextFrame)));
+  if (frame === currentFrame) return;
+
+  const restoreScroll = preserveScrollPosition();
+  currentFrame = frame;
   notify();
+  restoreScroll?.();
 }
 
 export function setCurrentSite(nextSite) {
   const max = Math.max(0, state.sites.names.length - 1);
-  currentSite = Math.max(0, Math.min(max, Number(nextSite)));
+  const site = Math.max(0, Math.min(max, Number(nextSite)));
+  if (site === currentSite) return;
+
+  const restoreScroll = preserveScrollPosition();
+  currentSite = site;
   notify();
+  restoreScroll?.();
 }
 
 export async function initializeForecastState() {
