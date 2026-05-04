@@ -58,8 +58,11 @@ export function renderSiteCards() {
       card.type = "button";
       card.dataset.active = String(index === currentState.currentSite);
       card.setAttribute("aria-label", t("siteRiskLabel", {site: name, risk: riskLabel}));
-      card.addEventListener("pointerdown", () => setCurrentSite(index));
-      card.addEventListener("click", () => setCurrentSite(index));
+      card.addEventListener("pointerdown", (event) => event.preventDefault());
+      card.addEventListener("click", (event) => {
+        event.preventDefault();
+        setCurrentSite(index);
+      });
 
       const nameElement = document.createElement("span");
       nameElement.className = "site-risk-name";

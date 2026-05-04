@@ -51,6 +51,10 @@ function updateColorbarSize(element) {
   element.style.setProperty("--map-colorbar-height", `${height}px`);
 }
 
+function invalidateMapSize(map) {
+  map.invalidateSize({animate: false, pan: false});
+}
+
 export async function renderSanDiegoMap() {
   const wrapper = document.createElement("section");
   wrapper.className = "map-card";
@@ -67,8 +71,10 @@ export async function renderSanDiegoMap() {
 
     const map = L.map(mapElement, {
       zoomControl: true,
-      attributionControl: true
+      attributionControl: true,
+      keyboard: false
     }).setView([32.58, -117.18], 14);
+    mapElement.setAttribute("tabindex", "-1");
 
     L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
@@ -87,7 +93,7 @@ export async function renderSanDiegoMap() {
 
     const resizeObserver = new ResizeObserver(() => {
       updateColorbarSize(mapElement);
-      map.invalidateSize(false);
+      invalidateMapSize(map);
     });
     resizeObserver.observe(mapElement);
     updateColorbarSize(mapElement);
@@ -139,11 +145,14 @@ export async function renderSanDiegoMap() {
           interactive: true
         });
 
-        marker.on("click", () => setCurrentSite(index));
+        marker.on("click", (event) => {
+          L.DomEvent.preventDefault(event.originalEvent);
+          setCurrentSite(index);
+        });
         marker.on("tooltipopen", (event) => {
           const tooltipElement = event.tooltip.getElement();
           if (!tooltipElement) return;
-          L.DomEvent.on(tooltipElement, "click", L.DomEvent.stopPropagation);
+          L.DomEvent.on(tooltipElement, "click", L.DomEvent.stop);
           L.DomEvent.on(tooltipElement, "click", () => setCurrentSite(index));
         });
 
@@ -168,7 +177,8 @@ export async function renderSanDiegoMap() {
         }).addTo(map);
 
         map.fitBounds(bounds, {
-          padding: [40, 40]
+          padding: [40, 40],
+          animate: false
         });
 
         if (snapshot.domain?.length) {
@@ -193,7 +203,6 @@ export async function renderSanDiegoMap() {
 
       buildShoreLayer(snapshot);
       buildSiteMarkers(snapshot);
-      requestAnimationFrame(() => map.invalidateSize(false));
     });
   })();
 
