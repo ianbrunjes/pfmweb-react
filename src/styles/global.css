@@ -17,14 +17,28 @@ body {
   min-height: 100dvh;
 }
 
-#observablehq-main {
-  margin: 0 auto;
-  padding: 24px 24px 56px;
-  max-width: 1640px;
+html body #observablehq-center {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html body #observablehq-main {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 24px 24px 56px !important;
   display: flex;
   flex-direction: column;
   gap: 20px;
   align-items: stretch;
+}
+
+html body #observablehq-main > .observablehq--block,
+html body #observablehq-main .observablehq--block {
+  max-width: none !important;
+  margin: 0 !important;
 }
 
 #observablehq-main .dashboard-page p,
@@ -578,8 +592,8 @@ body {
 }
 
 @media (max-width: 640px) {
-  #observablehq-main {
-    padding: 16px 12px 32px;
+  html body #observablehq-main {
+    padding: 16px 12px 32px !important;
   }
 
   .title-card,

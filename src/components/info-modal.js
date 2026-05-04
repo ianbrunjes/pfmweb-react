@@ -128,7 +128,5 @@ export function renderInfoModal() {
   controls.append(infoButton, englishButton, spanishButton);
   wrapper.append(controls, modal);
 
-  requestAnimationFrame(openModal);
-
   return wrapper;
 }
