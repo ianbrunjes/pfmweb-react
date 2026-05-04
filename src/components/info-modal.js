@@ -8,6 +8,9 @@ function renderModalContent() {
         <button class="info-modal-close" type="button" aria-label="${t("closeMoreInformation")}">×</button>
       </div>
       <div class="info-modal-body">
+        <section class="info-modal-callout">
+          <p>${t("infoExperimental")}</p>
+        </section>
         <section class="info-modal-section">
           <h3>${t("infoForecastOverviewTitle")}</h3>
           <p>${t("infoForecastOverview")}</p>
@@ -16,9 +19,18 @@ function renderModalContent() {
           <h3>${t("infoRiskColorsTitle")}</h3>
           <p>${t("infoRiskColors")}</p>
           <ul class="info-risk-list">
-            <li><span class="info-risk-dot risk-high"></span><strong>${t("red")}</strong> ${t("infoHighRisk")}</li>
-            <li><span class="info-risk-dot risk-medium"></span><strong>${t("yellow")}</strong> ${t("infoMediumRisk")}</li>
-            <li><span class="info-risk-dot risk-low"></span><strong>${t("green")}</strong> ${t("infoLowRisk")}</li>
+            <li>
+              <span class="info-risk-dot risk-high"></span>
+              <span class="info-risk-copy"><strong>${t("red")}</strong> ${t("infoHighRisk")}</span>
+            </li>
+            <li>
+              <span class="info-risk-dot risk-medium"></span>
+              <span class="info-risk-copy"><strong>${t("yellow")}</strong> ${t("infoMediumRisk")}</span>
+            </li>
+            <li>
+              <span class="info-risk-dot risk-low"></span>
+              <span class="info-risk-copy"><strong>${t("green")}</strong> ${t("infoLowRisk")}</span>
+            </li>
           </ul>
         </section>
         <section class="info-modal-section">
@@ -36,9 +48,6 @@ function renderModalContent() {
         <section class="info-modal-section">
           <h3>${t("infoModelNotesTitle")}</h3>
           <p>${t("infoModelNotesPrefix")} <a href="mailto:ffeddersen@ucsd.edu">ffeddersen@ucsd.edu</a>.</p>
-        </section>
-        <section class="info-modal-callout">
-          <p>${t("infoExperimental")}</p>
         </section>
         <section class="info-modal-section">
           <h3>${t("infoFundingTitle")}</h3>
@@ -118,5 +127,8 @@ export function renderInfoModal() {
   subscribeToLocale(renderText);
   controls.append(infoButton, englishButton, spanishButton);
   wrapper.append(controls, modal);
+
+  requestAnimationFrame(openModal);
+
   return wrapper;
 }
