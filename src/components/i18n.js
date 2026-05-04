@@ -6,7 +6,7 @@ const dictionaries = {
   en: {
     localeEnglish: "EN",
     localeSpanish: "ES",
-    title: "Pathogen Forecast Model Phase 1",
+    title: "[TEST VERSION] Pathogen Forecast Model Phase 1",
     coastLabel: "San Diego / Tijuana Coast",
     updated: "Updated {time}",
     forecastTimeUnavailable: "Forecast time unavailable",
@@ -57,7 +57,7 @@ const dictionaries = {
   es: {
     localeEnglish: "EN",
     localeSpanish: "ES",
-    title: "Modelo de Pronóstico de Patógenos Fase 1",
+    title: "[VERSIÓN DE PRUEBA] Modelo de Pronóstico de Patógenos Fase 1",
     coastLabel: "Costa de San Diego / Tijuana",
     updated: "Actualizado {time}",
     forecastTimeUnavailable: "Hora del pronóstico no disponible",
