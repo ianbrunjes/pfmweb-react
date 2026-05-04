@@ -100,66 +100,78 @@ export async function renderSanDiegoMap() {
 
     let imageOverlay = null;
     let shoreLayer = null;
+    let shoreMarkers = [];
     let siteLayer = null;
+    let siteMarkers = [];
     let domainLayer = null;
     let colorbarAdded = false;
 
-    const buildShoreLayer = (snapshot) => {
-      if (shoreLayer) shoreLayer.remove();
+    const updateShoreLayer = (snapshot) => {
       if (!snapshot.shoreline.lats.length || !snapshot.shoreline.risk.length) return;
 
-      const circles = snapshot.shoreline.lats.map((lat, index) =>
-        L.circleMarker([lat, snapshot.shoreline.lons[index]], {
-          pane: "shoreRiskPane",
-          radius: 3,
-          color: RISK_COLORS[snapshot.shoreline.risk[snapshot.currentFrame]?.[index] ?? 0] ?? "#888",
-          fillColor: RISK_COLORS[snapshot.shoreline.risk[snapshot.currentFrame]?.[index] ?? 0] ?? "#888",
-          fillOpacity: 0.9,
-          weight: 0
-        })
-      );
+      if (!shoreLayer || shoreMarkers.length !== snapshot.shoreline.lats.length) {
+        if (shoreLayer) shoreLayer.remove();
+        shoreMarkers = snapshot.shoreline.lats.map((lat, index) =>
+          L.circleMarker([lat, snapshot.shoreline.lons[index]], {
+            pane: "shoreRiskPane",
+            radius: 3,
+            fillOpacity: 0.9,
+            weight: 0
+          })
+        );
 
-      shoreLayer = L.layerGroup(circles).addTo(map);
+        shoreLayer = L.layerGroup(shoreMarkers).addTo(map);
+      }
+
+      shoreMarkers.forEach((marker, index) => {
+        const color = RISK_COLORS[snapshot.shoreline.risk[snapshot.currentFrame]?.[index] ?? 0] ?? "#888";
+        marker.setStyle({color, fillColor: color});
+      });
     };
 
-    const buildSiteMarkers = (snapshot) => {
-      if (siteLayer) siteLayer.remove();
+    const updateSiteMarkers = (snapshot) => {
       if (!snapshot.sites.names.length) return;
 
-      const markers = snapshot.sites.names.map((name, index) => {
+      if (!siteLayer || siteMarkers.length !== snapshot.sites.names.length) {
+        if (siteLayer) siteLayer.remove();
+        siteMarkers = snapshot.sites.names.map((name, index) => {
+          const marker = L.circleMarker([snapshot.sites.lats[index], snapshot.sites.lons[index]], {
+            pane: "siteRiskPane",
+            radius: 6,
+            color: "#fff",
+            weight: 2,
+            fillOpacity: 1,
+            interactive: true
+          }).bindTooltip(name, {
+            permanent: true,
+            direction: "right",
+            offset: [6, 0],
+            className: "site-label",
+            interactive: true
+          });
+
+          marker.on("click", (event) => {
+            L.DomEvent.preventDefault(event.originalEvent);
+            setCurrentSite(index);
+          });
+          marker.on("tooltipopen", (event) => {
+            const tooltipElement = event.tooltip.getElement();
+            if (!tooltipElement || tooltipElement.dataset.clickReady === "true") return;
+            tooltipElement.dataset.clickReady = "true";
+            L.DomEvent.on(tooltipElement, "click", L.DomEvent.stop);
+            L.DomEvent.on(tooltipElement, "click", () => setCurrentSite(index));
+          });
+
+          return marker;
+        });
+
+        siteLayer = L.layerGroup(siteMarkers).addTo(map);
+      }
+
+      siteMarkers.forEach((marker, index) => {
         const risk = snapshot.sites.risk[snapshot.currentFrame]?.[index] ?? 0;
-
-        const marker = L.circleMarker([snapshot.sites.lats[index], snapshot.sites.lons[index]], {
-          pane: "siteRiskPane",
-          radius: 6,
-          color: "#fff",
-          weight: 2,
-          fillColor: RISK_COLORS[risk] ?? "#888",
-          fillOpacity: 1,
-          interactive: true
-        }).bindTooltip(name, {
-          permanent: true,
-          direction: "right",
-          offset: [6, 0],
-          className: "site-label",
-          interactive: true
-        });
-
-        marker.on("click", (event) => {
-          L.DomEvent.preventDefault(event.originalEvent);
-          setCurrentSite(index);
-        });
-        marker.on("tooltipopen", (event) => {
-          const tooltipElement = event.tooltip.getElement();
-          if (!tooltipElement) return;
-          L.DomEvent.on(tooltipElement, "click", L.DomEvent.stop);
-          L.DomEvent.on(tooltipElement, "click", () => setCurrentSite(index));
-        });
-
-        return marker;
+        marker.setStyle({fillColor: RISK_COLORS[risk] ?? "#888"});
       });
-
-      siteLayer = L.layerGroup(markers).addTo(map);
     };
 
     //TODO image overlay has weird border
@@ -201,8 +213,8 @@ export async function renderSanDiegoMap() {
         imageOverlay.setUrl(getFrameUrl(snapshot.currentFrame));
       }
 
-      buildShoreLayer(snapshot);
-      buildSiteMarkers(snapshot);
+      updateShoreLayer(snapshot);
+      updateSiteMarkers(snapshot);
     });
   })();
 

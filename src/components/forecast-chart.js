@@ -34,6 +34,8 @@ export function renderForecastChart() {
 
   let chart = null;
   let currentState = null;
+  let chartDataKey = "";
+  let visibleSite = null;
 
   const destroyChart = () => {
     if (chart) {
@@ -42,7 +44,7 @@ export function renderForecastChart() {
     }
   };
 
-  const render = (state) => {
+  const render = (state, forceLabels = false) => {
     if (state) currentState = state;
     if (!currentState) return;
 
@@ -56,6 +58,8 @@ export function renderForecastChart() {
       canvas.style.display = "none";
       empty.style.display = "block";
       destroyChart();
+      chartDataKey = "";
+      visibleSite = null;
       return;
     }
 
@@ -157,16 +161,27 @@ export function renderForecastChart() {
       });
     }
 
-    chart.data.labels = currentState.times.map(formatShortLabel);
-    chart.data.datasets.forEach((dataset, index) => {
-      dataset.data = currentState.sites.l10.map((row) => row[index]);
-      chart.setDatasetVisibility(index, index === currentState.currentSite);
-    });
+    const nextDataKey = `${currentState.times.length}|${currentState.sites.names.join("\u0000")}`;
+    if (forceLabels || chartDataKey !== nextDataKey) {
+      chart.data.labels = currentState.times.map(formatShortLabel);
+      chart.data.datasets.forEach((dataset, index) => {
+        dataset.data = currentState.sites.l10.map((row) => row[index]);
+      });
+      chartDataKey = nextDataKey;
+    }
+
+    if (visibleSite !== currentState.currentSite) {
+      chart.data.datasets.forEach((_dataset, index) => {
+        chart.setDatasetVisibility(index, index === currentState.currentSite);
+      });
+      visibleSite = currentState.currentSite;
+    }
+
     chart.update("none");
   };
 
   subscribeToForecastState(render);
-  subscribeToLocale(() => render());
+  subscribeToLocale(() => render(null, true));
 
   return wrapper;
 }

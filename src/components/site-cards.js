@@ -30,15 +30,35 @@ export function renderSiteCards() {
   wrapper.append(label, list);
 
   let currentState = null;
+  let lastNamesKey = "";
+  let cards = [];
 
-  const render = (state) => {
+  const updateCards = () => {
+    cards.forEach(({card, icon, index}) => {
+      const risk = currentState.sites.risk[currentState.currentFrame]?.[index] ?? 0;
+      const riskLabel = t(RISK_LABEL_KEYS[risk] ?? "unknownRisk");
+      card.className = `site-risk-card risk-${risk}`;
+      card.dataset.active = String(index === currentState.currentSite);
+      card.setAttribute(
+        "aria-label",
+        t("siteRiskLabel", {site: currentState.sites.names[index], risk: riskLabel})
+      );
+      icon.innerHTML = RISK_ICONS[risk] ?? RISK_ICONS[0];
+    });
+  };
+
+  const render = (state, forceRebuild = false) => {
     if (state) currentState = state;
     if (!currentState) return;
 
     label.textContent = t("selectLocation");
-    list.innerHTML = "";
+    const namesKey = currentState.sites.names.join("\u0000");
 
     if (!currentState.sites.names.length) {
+      if (lastNamesKey === namesKey && !forceRebuild) return;
+      lastNamesKey = namesKey;
+      cards = [];
+      list.innerHTML = "";
       const empty = document.createElement("div");
       empty.className = "site-detail-card site-detail-empty";
       empty.innerHTML = `
@@ -48,6 +68,15 @@ export function renderSiteCards() {
       list.append(empty);
       return;
     }
+
+    if (lastNamesKey === namesKey && !forceRebuild) {
+      updateCards();
+      return;
+    }
+
+    lastNamesKey = namesKey;
+    cards = [];
+    list.innerHTML = "";
 
     currentState.sites.names.toReversed().forEach((name, reverseIndex) => {
       const index = currentState.sites.names.length - 1 - reverseIndex;
@@ -59,6 +88,10 @@ export function renderSiteCards() {
       card.dataset.active = String(index === currentState.currentSite);
       card.setAttribute("aria-label", t("siteRiskLabel", {site: name, risk: riskLabel}));
       card.addEventListener("pointerdown", (event) => event.preventDefault());
+      card.addEventListener("pointerup", (event) => {
+        event.preventDefault();
+        setCurrentSite(index);
+      });
       card.addEventListener("click", (event) => {
         event.preventDefault();
         setCurrentSite(index);
@@ -68,13 +101,15 @@ export function renderSiteCards() {
       nameElement.className = "site-risk-name";
       nameElement.textContent = name;
 
-      card.append(createRiskIcon(risk), nameElement);
+      const riskIcon = createRiskIcon(risk);
+      card.append(riskIcon, nameElement);
       list.append(card);
+      cards.push({card, icon: riskIcon, index});
     });
   };
 
   subscribeToForecastState(render);
-  subscribeToLocale(() => render());
+  subscribeToLocale(() => render(null, true));
 
   return wrapper;
 }
