@@ -3,9 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "observable preview",
+    "clean": "rimraf src/.observablehq/cache",
     "build": "observable build",
-    "deploy": "observable deploy"
+    "dev": "observable preview",
+    "deploy": "observable deploy",
+    "observable": "observable",
+    "install": "pip3 install -r requirements.txt"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.2.0",

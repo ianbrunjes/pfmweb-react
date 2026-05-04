@@ -1,13 +1,17 @@
 import L from "leaflet";
+import {FileAttachment} from "observablehq:stdlib";
 import {
   getForecastState,
   getFrameUrl,
   setCurrentSite,
   subscribeToForecastState
 } from "./pfm-state.js";
-import {subscribeToLocale, t} from "./i18n.js";
 
 const RISK_COLORS = ["palegreen", "gold", "firebrick"];
+const COLORBAR_IMAGE = FileAttachment("../vendor/images/pfmweb_colorbar_pcent.png");
+const COLORBAR_MIN_HEIGHT = 180;
+const COLORBAR_MAX_HEIGHT = 420;
+const COLORBAR_MAP_HEIGHT_RATIO = 0.62;
 
 function waitForMapLayout(element) {
   return new Promise((resolve) => {
@@ -22,36 +26,29 @@ function waitForMapLayout(element) {
   });
 }
 
-function addColorbar(map) {
-  const renderHtml = () => `
-    <div class="map-colorbar">
-      <div class="map-colorbar-labels">
-        <div style="top: 56px;">0.001%</div>
-        <div style="top: 94px;">0.1%</div>
-        <div style="top: 132px;">10%</div>
-        <div style="top: 150px;">≈ 0%</div>
-      </div>
-      <div class="map-colorbar-bar"></div>
-      <div class="map-colorbar-title">${t("mapColorbarTitle")}</div>
-    </div>
-  `;
-
-  let container = null;
+function addColorbar(map, imageUrl) {
   const ColorbarControl = L.Control.extend({
     options: {position: "bottomleft"},
     onAdd() {
       const div = L.DomUtil.create("div");
-      div.innerHTML = renderHtml();
+      div.className = "map-colorbar";
+      div.innerHTML = `<img src="${imageUrl}" alt="Sewage concentration legend" class="map-colorbar-image">`;
       L.DomEvent.disableClickPropagation(div);
-      container = div;
       return div;
     }
   });
 
   new ColorbarControl().addTo(map);
-  subscribeToLocale(() => {
-    if (container) container.innerHTML = renderHtml();
-  });
+}
+
+function updateColorbarSize(element) {
+  const height = Math.round(
+    Math.max(
+      COLORBAR_MIN_HEIGHT,
+      Math.min(COLORBAR_MAX_HEIGHT, element.clientHeight * COLORBAR_MAP_HEIGHT_RATIO)
+    )
+  );
+  element.style.setProperty("--map-colorbar-height", `${height}px`);
 }
 
 export async function renderSanDiegoMap() {
@@ -65,6 +62,7 @@ export async function renderSanDiegoMap() {
   wrapper.append(mapElement);
 
   void (async () => {
+    const colorbarUrl = await COLORBAR_IMAGE.url();
     await waitForMapLayout(mapElement);
 
     const map = L.map(mapElement, {
@@ -88,9 +86,11 @@ export async function renderSanDiegoMap() {
     map.getPane("siteRiskPane").style.zIndex = 620;
 
     const resizeObserver = new ResizeObserver(() => {
+      updateColorbarSize(mapElement);
       map.invalidateSize(false);
     });
     resizeObserver.observe(mapElement);
+    updateColorbarSize(mapElement);
 
     let imageOverlay = null;
     let shoreLayer = null;
@@ -163,7 +163,7 @@ export async function renderSanDiegoMap() {
         ];
 
         imageOverlay = L.imageOverlay(getFrameUrl(0), bounds, {
-          opacity: 0.75,
+          opacity: 1,
           interactive: false
         }).addTo(map);
 
@@ -182,7 +182,7 @@ export async function renderSanDiegoMap() {
         }
 
         if (!colorbarAdded) {
-          addColorbar(map);
+          addColorbar(map, colorbarUrl);
           colorbarAdded = true;
         }
       }

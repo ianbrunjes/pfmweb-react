@@ -1,0 +1,6 @@
+xarray
+matplotlib
+numpy==1.26.4
+netcdf4
+scipy
+Pillow

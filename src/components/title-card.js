@@ -9,8 +9,8 @@ export function renderTitleCard() {
   const content = document.createElement("div");
   content.className = "title-card-content";
 
-  const copy = document.createElement("div");
-  copy.className = "title-copy";
+  const mainRow = document.createElement("div");
+  mainRow.className = "title-card-main-row";
 
   const eyebrow = document.createElement("p");
   eyebrow.className = "title-eyebrow";
@@ -18,8 +18,8 @@ export function renderTitleCard() {
   const title = document.createElement("h1");
   title.className = "title-card-heading";
 
-  copy.append(eyebrow, title);
-  content.append(copy, renderInfoModal());
+  mainRow.append(title, renderInfoModal());
+  content.append(eyebrow, mainRow);
   wrapper.append(content);
 
   const renderText = () => {

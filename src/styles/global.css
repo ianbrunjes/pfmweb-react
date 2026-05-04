@@ -63,16 +63,16 @@ body {
 }
 
 .title-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.title-card-main-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 18px;
   align-items: center;
-}
-
-.title-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
 }
 
 .title-eyebrow {
@@ -144,22 +144,44 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 42px;
-  height: 34px;
-  padding: 0 10px;
-  border: 1px solid var(--theme-foreground-fainter);
-  border-radius: 6px;
-  background: var(--theme-background);
-  color: var(--theme-foreground);
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid var(--theme-foreground-fainter);
+  border-radius: 50%;
+  background-color: var(--theme-background);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   cursor: pointer;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.03em;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
 }
 
 .locale-select-button[data-active="true"] {
   border-color: var(--theme-blue);
-  color: var(--theme-blue);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--theme-blue) 24%, transparent),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+
+.locale-select-button[data-locale="en"] {
+  background-image:
+    linear-gradient(90deg, #3c3b6e 0 42%, transparent 42%),
+    repeating-linear-gradient(
+      180deg,
+      #b22234 0 7.69%,
+      #b22234 7.69% 15.38%,
+      #ffffff 15.38% 23.07%
+    );
+  background-size: 58% 54%, 100% 100%;
+  background-position: left top, center;
+}
+
+.locale-select-button[data-locale="es"] {
+  background-image:
+    radial-gradient(circle at center, #b68a16 0 7%, transparent 8%),
+    linear-gradient(90deg, #006847 0 33.33%, #ffffff 33.33% 66.66%, #ce1126 66.66% 100%);
 }
 
 .info-modal-open {
@@ -406,62 +428,14 @@ body {
 }
 
 .map-colorbar {
-  display: flex;
-  align-items: flex-end;
-  gap: 6px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   user-select: none;
 }
 
-.map-colorbar-labels {
-  position: relative;
-  width: 52px;
-  height: 150px;
-  flex-shrink: 0;
-}
-
-.map-colorbar-labels div {
-  position: absolute;
-  right: 0;
-  transform: translateY(-50%);
-  padding: 1px 4px;
-  border: 1px solid rgba(0, 0, 0, 0.18);
-  border-radius: 3px;
-  background: var(--theme-background);
-  color: var(--theme-foreground);
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 1.4;
-  white-space: nowrap;
-}
-
-.map-colorbar-bar {
-  width: 14px;
-  height: 150px;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  border-radius: 3px;
-  background: linear-gradient(
-    to top,
-    rgba(255, 220, 0, 0) 0%,
-    rgba(255, 220, 0, 0.078) 25%,
-    rgba(255, 210, 0, 0.431) 37.5%,
-    rgba(255, 160, 0, 0.725) 50%,
-    rgba(255, 80, 0, 0.882) 62.5%,
-    rgba(70, 0, 110, 0.941) 83.75%,
-    rgba(40, 0, 70, 1) 100%
-  );
-}
-
-.map-colorbar-title {
-  align-self: center;
-  margin-left: 4px;
-  color: var(--theme-foreground);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  text-shadow: none;
-  writing-mode: vertical-rl;
+.map-colorbar-image {
+  display: block;
+  width: auto;
+  height: var(--map-colorbar-height, 260px);
+  max-height: calc(100% - 24px);
 }
 
 .leaflet-tooltip.site-label {
@@ -622,7 +596,16 @@ body {
     gap: 12px;
   }
 
+  .title-card-main-row {
+    gap: 12px;
+  }
+
   .info-modal-button {
+    width: 34px;
+    height: 34px;
+  }
+
+  .locale-select-button {
     width: 34px;
     height: 34px;
   }

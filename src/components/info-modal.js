@@ -68,10 +68,12 @@ export function renderInfoModal() {
   const englishButton = document.createElement("button");
   englishButton.className = "locale-select-button";
   englishButton.type = "button";
+  englishButton.dataset.locale = "en";
 
   const spanishButton = document.createElement("button");
   spanishButton.className = "locale-select-button";
   spanishButton.type = "button";
+  spanishButton.dataset.locale = "es";
 
   const modal = document.createElement("div");
   modal.className = "info-modal-backdrop";
@@ -81,8 +83,10 @@ export function renderInfoModal() {
   const renderText = () => {
     const activeLocale = getLocale();
     infoButton.setAttribute("aria-label", t("openMoreInformation"));
-    englishButton.textContent = t("localeEnglish");
-    spanishButton.textContent = t("localeSpanish");
+    englishButton.setAttribute("aria-label", "Use US English");
+    englishButton.title = "US English";
+    spanishButton.setAttribute("aria-label", "Usar México Español");
+    spanishButton.title = "México Español";
     englishButton.dataset.active = String(activeLocale === "en");
     spanishButton.dataset.active = String(activeLocale === "es");
     modal.innerHTML = renderModalContent();
