@@ -1,6 +1,10 @@
 import Chart from "chart.js/auto";
-import {getForecastState, setCurrentSite, subscribeToForecastState} from "./pfm-state.js";
-import {formatDateTime, subscribeToLocale, t} from "./i18n.js";
+import {
+  getForecastState,
+  setCurrentSite,
+  subscribeToForecastState
+} from "../state/forecast-store.js";
+import {formatDateTime, subscribeToLocale, t} from "../lib/i18n.js";
 
 const CHART_LINE_COLOR = "#2563eb";
 

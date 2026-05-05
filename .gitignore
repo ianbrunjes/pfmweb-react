@@ -2,5 +2,6 @@
 node_modules
 .observablehq
 dist
+web_data_latest.nc
 src/data/web_data_latest.nc
 /dockerfiles

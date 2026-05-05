@@ -5,9 +5,8 @@ import {
   getFrameUrl,
   setCurrentSite,
   subscribeToForecastState
-} from "./pfm-state.js";
-
-const RISK_COLORS = ["palegreen", "gold", "firebrick"];
+} from "../state/forecast-store.js";
+import {getRiskColor} from "../lib/risk.js";
 const COLORBAR_IMAGE = FileAttachment("../vendor/images/pfmweb_colorbar_pcent.png");
 const COLORBAR_MIN_HEIGHT = 180;
 const COLORBAR_MAX_HEIGHT = 420;
@@ -124,7 +123,7 @@ export async function renderSanDiegoMap() {
       }
 
       shoreMarkers.forEach((marker, index) => {
-        const color = RISK_COLORS[snapshot.shoreline.risk[snapshot.currentFrame]?.[index] ?? 0] ?? "#888";
+        const color = getRiskColor(snapshot.shoreline.risk[snapshot.currentFrame]?.[index] ?? 0) ?? "#888";
         marker.setStyle({color, fillColor: color});
       });
     };
@@ -170,7 +169,7 @@ export async function renderSanDiegoMap() {
 
       siteMarkers.forEach((marker, index) => {
         const risk = snapshot.sites.risk[snapshot.currentFrame]?.[index] ?? 0;
-        marker.setStyle({fillColor: RISK_COLORS[risk] ?? "#888"});
+        marker.setStyle({fillColor: getRiskColor(risk) ?? "#888"});
       });
     };
 

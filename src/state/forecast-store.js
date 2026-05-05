@@ -1,8 +1,13 @@
-import {loadForecastAssets} from "./pfm-assets.js";
-import {formatDateTime, t} from "./i18n.js";
+import {loadForecastAssets} from "../data/forecast-assets.js";
+import {
+  buildFallbackTimes,
+  createEmptyShoreline,
+  createEmptySites,
+  createFallbackForecastState
+} from "../data/forecast-defaults.js";
+import {formatDateTime, t} from "../lib/i18n.js";
+import {clampIndex} from "./forecast-state-utils.js";
 
-const HOUR_MS = 60 * 60 * 1000;
-const DEFAULT_FRAME_COUNT = 121;
 const listeners = new Set();
 
 let currentFrame = 0;
@@ -10,34 +15,7 @@ let currentSite = 0;
 let initialized = false;
 let initializePromise = null;
 
-const state = {
-  times: buildFallbackTimes(),
-  frameUrls: [],
-  bounds: null,
-  domain: null,
-  thresholds: [-5, -3],
-  sites: {
-    names: [],
-    lats: [],
-    lons: [],
-    risk: [],
-    dye: [],
-    l10: []
-  },
-  shoreline: {
-    lats: [],
-    lons: [],
-    risk: []
-  }
-};
-
-function buildFallbackTimes() {
-  const start = new Date();
-  return Array.from({length: DEFAULT_FRAME_COUNT}, (_, index) => {
-    const next = new Date(start.getTime() + index * HOUR_MS);
-    return next.toISOString().slice(0, 19);
-  });
-}
+const state = createFallbackForecastState();
 
 function notify() {
   const snapshot = getForecastState();
@@ -71,6 +49,46 @@ function formatDisplayTime(isoString) {
     hour12: true,
     timeZone: "America/Los_Angeles"
   });
+}
+
+function resetForecastData() {
+  const fallback = createFallbackForecastState();
+  state.times = fallback.times;
+  state.frameUrls = fallback.frameUrls;
+  state.bounds = fallback.bounds;
+  state.domain = fallback.domain;
+  state.thresholds = fallback.thresholds;
+  state.sites = createEmptySites();
+  state.shoreline = createEmptyShoreline();
+}
+
+function applyForecastAssets({times, sites, shoreline, frameUrls}) {
+  state.times = times.times ?? buildFallbackTimes();
+  state.frameUrls = frameUrls ?? [];
+  state.bounds = times.bounds ?? null;
+  state.domain = times.domain ?? null;
+  state.thresholds = times.thresholds ?? [-5, -3];
+  state.sites = {
+    names: sites.names ?? [],
+    lats: sites.lats ?? [],
+    lons: sites.lons ?? [],
+    risk: sites.risk ?? [],
+    dye: sites.dye ?? [],
+    l10: sites.l10 ?? []
+  };
+  state.shoreline = {
+    lats: shoreline.lats ?? [],
+    lons: shoreline.lons ?? [],
+    risk: shoreline.risk ?? []
+  };
+}
+
+export function clampFrameIndex(nextFrame, frameCount = state.times.length) {
+  return clampIndex(nextFrame, frameCount);
+}
+
+export function clampSiteIndex(nextSite, siteCount = state.sites.names.length) {
+  return clampIndex(nextSite, siteCount);
 }
 
 export function getForecastState() {
@@ -107,8 +125,7 @@ export function getFrameCount() {
 }
 
 export function setCurrentFrame(nextFrame) {
-  const max = Math.max(0, state.times.length - 1);
-  const frame = Math.max(0, Math.min(max, Number(nextFrame)));
+  const frame = clampFrameIndex(nextFrame);
   if (frame === currentFrame) return;
 
   const restoreScroll = preserveScrollPosition();
@@ -118,8 +135,7 @@ export function setCurrentFrame(nextFrame) {
 }
 
 export function setCurrentSite(nextSite) {
-  const max = Math.max(0, state.sites.names.length - 1);
-  const site = Math.max(0, Math.min(max, Number(nextSite)));
+  const site = clampSiteIndex(nextSite);
   if (site === currentSite) return;
 
   const restoreScroll = preserveScrollPosition();
@@ -134,49 +150,14 @@ export async function initializeForecastState() {
 
   initializePromise = (async () => {
     try {
-      const {times, sites, shoreline, frameUrls} = await loadForecastAssets();
-
-      state.times = times.times ?? buildFallbackTimes();
-      state.frameUrls = frameUrls ?? [];
-      state.bounds = times.bounds ?? null;
-      state.domain = times.domain ?? null;
-      state.thresholds = times.thresholds ?? [-5, -3];
-      state.sites = {
-        names: sites.names ?? [],
-        lats: sites.lats ?? [],
-        lons: sites.lons ?? [],
-        risk: sites.risk ?? [],
-        dye: sites.dye ?? [],
-        l10: sites.l10 ?? []
-      };
-      state.shoreline = {
-        lats: shoreline.lats ?? [],
-        lons: shoreline.lons ?? [],
-        risk: shoreline.risk ?? []
-      };
+      const assets = await loadForecastAssets();
+      applyForecastAssets(assets);
 
       if (!state.times.length || !state.frameUrls.length) {
         throw new Error("Forecast assets are missing.");
       }
     } catch {
-      state.times = buildFallbackTimes();
-      state.frameUrls = [];
-      state.bounds = null;
-      state.domain = null;
-      state.thresholds = [-5, -3];
-      state.sites = {
-        names: [],
-        lats: [],
-        lons: [],
-        risk: [],
-        dye: [],
-        l10: []
-      };
-      state.shoreline = {
-        lats: [],
-        lons: [],
-        risk: []
-      };
+      resetForecastData();
     }
 
     initialized = true;

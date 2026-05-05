@@ -5,8 +5,8 @@ import {
   getFrameCount,
   setCurrentFrame,
   subscribeToForecastState
-} from "./pfm-state.js";
-import {subscribeToLocale, t} from "./i18n.js";
+} from "../state/forecast-store.js";
+import {subscribeToLocale, t} from "../lib/i18n.js";
 
 export function renderTimeSlider() {
   const wrapper = document.createElement("section");

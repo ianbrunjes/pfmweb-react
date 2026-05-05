@@ -119,6 +119,13 @@ function notifyLocaleChange() {
   for (const listener of listeners) listener(currentLocale);
 }
 
+export function interpolateTemplate(template, values = {}) {
+  return Object.entries(values).reduce(
+    (result, [name, value]) => result.replaceAll(`{${name}}`, value),
+    template
+  );
+}
+
 export function getLocale() {
   return currentLocale;
 }
@@ -138,10 +145,7 @@ export function subscribeToLocale(listener) {
 
 export function t(key, values = {}) {
   const template = dictionaries[currentLocale][key] ?? dictionaries[DEFAULT_LOCALE][key] ?? key;
-  return Object.entries(values).reduce(
-    (result, [name, value]) => result.replaceAll(`{${name}}`, value),
-    template
-  );
+  return interpolateTemplate(template, values);
 }
 
 export function formatDateTime(isoString, options = {}) {

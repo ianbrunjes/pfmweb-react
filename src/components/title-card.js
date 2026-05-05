@@ -1,6 +1,6 @@
-import {formatUpdatedTime, subscribeToForecastState} from "./pfm-state.js";
-import {renderInfoModal} from "./info-modal.js";
-import {subscribeToLocale, t} from "./i18n.js";
+import {formatUpdatedTime, subscribeToForecastState} from "../state/forecast-store.js";
+import {renderLocaleControls} from "./dashboard-info.js";
+import {subscribeToLocale, t} from "../lib/i18n.js";
 
 export function renderTitleCard() {
   const wrapper = document.createElement("section");
@@ -18,7 +18,7 @@ export function renderTitleCard() {
   const title = document.createElement("h1");
   title.className = "title-card-heading";
 
-  mainRow.append(title, renderInfoModal());
+  mainRow.append(title, renderLocaleControls());
   content.append(eyebrow, mainRow);
   wrapper.append(content);
 

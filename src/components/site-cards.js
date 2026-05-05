@@ -1,21 +1,6 @@
-import {setCurrentSite, subscribeToForecastState} from "./pfm-state.js";
-import {subscribeToLocale, t} from "./i18n.js";
-
-const RISK_LABEL_KEYS = ["lowRisk", "mediumRisk", "highRisk"];
-const RISK_ICONS = [
-  '<path fill="palegreen" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path>',
-  '<path fill="gold" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path>',
-  '<path fill="firebrick" d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480L40 480c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24l0 112c0 13.3 10.7 24 24 24s24-10.7 24-24l0-112c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"></path>'
-];
-
-function createRiskIcon(risk) {
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.classList.add("site-risk-icon");
-  svg.setAttribute("viewBox", "0 0 512 512");
-  svg.setAttribute("aria-hidden", "true");
-  svg.innerHTML = RISK_ICONS[risk] ?? RISK_ICONS[0];
-  return svg;
-}
+import {setCurrentSite, subscribeToForecastState} from "../state/forecast-store.js";
+import {subscribeToLocale, t} from "../lib/i18n.js";
+import {createRiskIcon, getRiskLabelKey} from "../lib/risk.js";
 
 export function renderSiteCards() {
   const wrapper = document.createElement("section");
@@ -34,16 +19,19 @@ export function renderSiteCards() {
   let cards = [];
 
   const updateCards = () => {
-    cards.forEach(({card, icon, index}) => {
+    cards.forEach((cardState) => {
+      const {card, index} = cardState;
       const risk = currentState.sites.risk[currentState.currentFrame]?.[index] ?? 0;
-      const riskLabel = t(RISK_LABEL_KEYS[risk] ?? "unknownRisk");
+      const riskLabel = t(getRiskLabelKey(risk) ?? "unknownRisk");
       card.className = `site-risk-card risk-${risk}`;
       card.dataset.active = String(index === currentState.currentSite);
       card.setAttribute(
         "aria-label",
         t("siteRiskLabel", {site: currentState.sites.names[index], risk: riskLabel})
       );
-      icon.innerHTML = RISK_ICONS[risk] ?? RISK_ICONS[0];
+      const nextIcon = createRiskIcon(risk);
+      cardState.icon.replaceWith(nextIcon);
+      cardState.icon = nextIcon;
     });
   };
 
@@ -58,13 +46,18 @@ export function renderSiteCards() {
       if (lastNamesKey === namesKey && !forceRebuild) return;
       lastNamesKey = namesKey;
       cards = [];
-      list.innerHTML = "";
+      list.replaceChildren();
       const empty = document.createElement("div");
       empty.className = "site-detail-card site-detail-empty";
-      empty.innerHTML = `
-        <p class="site-empty-title">${t("monitoringUnavailable")}</p>
-        <p class="site-empty-copy">${t("monitoringUnavailableCopy")}</p>
-      `;
+      const emptyTitle = document.createElement("p");
+      emptyTitle.className = "site-empty-title";
+      emptyTitle.textContent = t("monitoringUnavailable");
+
+      const emptyCopy = document.createElement("p");
+      emptyCopy.className = "site-empty-copy";
+      emptyCopy.textContent = t("monitoringUnavailableCopy");
+
+      empty.append(emptyTitle, emptyCopy);
       list.append(empty);
       return;
     }
@@ -76,12 +69,12 @@ export function renderSiteCards() {
 
     lastNamesKey = namesKey;
     cards = [];
-    list.innerHTML = "";
+    list.replaceChildren();
 
     currentState.sites.names.toReversed().forEach((name, reverseIndex) => {
       const index = currentState.sites.names.length - 1 - reverseIndex;
       const risk = currentState.sites.risk[currentState.currentFrame]?.[index] ?? 0;
-      const riskLabel = t(RISK_LABEL_KEYS[risk] ?? "unknownRisk");
+      const riskLabel = t(getRiskLabelKey(risk) ?? "unknownRisk");
       const card = document.createElement("button");
       card.className = `site-risk-card risk-${risk}`;
       card.type = "button";
