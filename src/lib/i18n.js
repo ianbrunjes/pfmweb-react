@@ -48,7 +48,7 @@ const dictionaries = {
     infoOfficialConditions: "The county's official beach water quality conditions are reported by the County of San Diego Beach & Bay Water Quality Monitoring Program. Current advisories, warnings, and closures are updated daily and can be found at County of San Diego Beach Water Quality. The County of San Diego also maintains the Tijuana River Valley Sewage Crisis Environmental Dashboard.",
     infoModelNotesTitle: "Model Notes",
     infoModelNotesPrefix: "This ocean forecast model is analogous to weather forecast models. Forecasts are typically 5 days long, but may be as short as 3 days. Occasionally if forecasts fail, the forecast date is a day behind. The dashed white rectangle box represents the region where the model is providing a forecast. Outside of this box, no forecast is made. This model uses NOAA forecasts of Tijuana River flow and estimates San Antonio de los Buenos outflow at Punta Bandera MX. Questions regarding the Pathogen Forecast Model should be addressed to",
-    infoExperimental: "Note: The computing cluster running PFM went down Tuesday July 8th 2026 and is slowly being brought back.  The current forecast is still unstable and likely underestimates current risk.  Overall, this forecast is experimental and may contain errors. Not for official use. Accuracy is not guaranteed.",
+    infoExperimental: "This forecast is experimental and may contain errors. Not for official use. Accuracy is not guaranteed.",
     infoFundingTitle: "Funding",
     infoFunding: "Funding provided by the State of California.",
     infoDashboardGuideTitle: "Dashboard Guide",
