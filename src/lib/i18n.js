@@ -16,7 +16,7 @@ const dictionaries = {
     chartUnavailable: "Forecast chart will appear once site assets are available.",
     mapColorbarTitle: "Sewage conc.",
     forecastAnimation: "Forecast Animation",
-    sliderInstructions: 'Click "Play" to animate the forecast, move the slider to scrub through time, and select a shoreline site to view the detailed forecast at right.',
+    sliderInstructions: 'Click "Play" to animate the forecast, move the slider to scrub through time, and select a shoreline site to view the detailed forecast below.',
     playForecast: "Play forecast playback",
     pauseForecast: "Pause forecast playback",
     selectLocation: "Select Location",
@@ -41,18 +41,18 @@ const dictionaries = {
     infoMediumRisk: "indicates moderate risk at values between 0.001% and 0.1% sewage.",
     infoLowRisk: "indicates low risk at values less than 0.001% sewage.",
     infoSwimmingLocationsTitle: "Swimming Locations",
-    infoSwimmingLocations: "Four swimming locations from south to north: Playas de Tijuana, Imperial Beach Pier, Silver Strand, and Coronado, Avenida Lunar are labeled with circles. Click on the circle to see a more detailed forecast shown above at these locations. There is also a drop-down menu in the detailed forecast shown above. In the graph above, sewage concentration is given in percentages with the high, moderate, and low swimmer risk indicated with the colored background.",
+    infoSwimmingLocations: "Four swimming locations from south to north: Playas de Tijuana, Imperial Beach Pier, Silver Strand, and Coronado, Avenida Lunar are labeled with circles. Click on the circle to see a more detailed forecast shown above at these locations. One can also click on the location noame above detailed forecast shown above. In the graph above, sewage concentration is given in percentages with the high, moderate, and low swimmer risk indicated with the colored background.",
     infoRiskBasisTitle: "Risk Basis",
     infoRiskBasis: "Swimmer illness risk is based upon risk of illness from norovirus Feddersen et al. (2021). A value of 0.1% sewage corresponds to a 10% risk of swimmer illness and a value of 0.001% sewage corresponds to a 1% risk of swimmer illness.",
     infoOfficialConditionsTitle: "Official Water Quality Conditions",
     infoOfficialConditions: "The county's official beach water quality conditions are reported by the County of San Diego Beach & Bay Water Quality Monitoring Program. Current advisories, warnings, and closures are updated daily and can be found at County of San Diego Beach Water Quality. The County of San Diego also maintains the Tijuana River Valley Sewage Crisis Environmental Dashboard.",
     infoModelNotesTitle: "Model Notes",
-    infoModelNotesPrefix: "This ocean forecast model is analogous to weather forecast models. Forecasts are typically 5 days long, but may be as short as 3 days. Occasionally if forecasts fail, the forecast date is a day behind. The dashed white rectangle box represents the region where the model is providing a forecast. Outside of this box, no forecast is made. This model uses NOAA forecasts of Tijuana River flow and estimates San Antonio de los Buenos outflow at Punta Bandera MX. Questions regarding the Pathogen Forecast Model should be addressed to",
+    infoModelNotesPrefix: "This ocean forecast model is analogous to weather forecast models. Forecasts are typically 5 days long, but may be as short as 3 days. Occasionally if forecasts fail, the forecast date is a day (or more) behind. The dashed white rectangle box represents the region where the model is providing a forecast. Outside of this box, no forecast is made. This model uses NOAA forecasts of Tijuana River flow and estimates San Antonio de los Buenos outflow at Punta Bandera MX. As with any forecast, this forecast also has errors. Questions regarding the Pathogen Forecast Model should be addressed to",
     infoExperimental: "This forecast is experimental and may contain errors. Not for official use. Accuracy is not guaranteed.",
     infoFundingTitle: "Funding",
     infoFunding: "Funding provided by the State of California.",
     infoDashboardGuideTitle: "Dashboard Guide",
-    infoDashboardGuide: "A guide to the PFM dashboard can be found on YouTube here."
+    infoDashboardGuide: "A guide to the PFM dashboard can be found on YouTube <a href="https://youtu.be/m8Nto5vhmKc">here</a>. Note this is for a previous website version but it is largely similar."
   },
   es: {
     localeEnglish: "EN",
@@ -67,7 +67,7 @@ const dictionaries = {
     chartUnavailable: "La gráfica del pronóstico aparecerá cuando estén disponibles los datos de los sitios.",
     mapColorbarTitle: "Conc. de aguas residuales",
     forecastAnimation: "Animación del Pronóstico",
-    sliderInstructions: 'Haz clic en "Reproducir" para animar el pronóstico, mueve el control deslizante para avanzar en el tiempo y selecciona un sitio de la costa para ver el pronóstico detallado a la derecha.',
+    sliderInstructions: 'Haz clic en "Reproducir" para animar el pronóstico, mueve el control deslizante para avanzar en el tiempo y selecciona un sitio de la costa para ver el pronóstico detallado abajo.',
     playForecast: "Reproducir pronóstico",
     pauseForecast: "Pausar pronóstico",
     selectLocation: "Seleccionar Ubicación",
@@ -103,7 +103,7 @@ const dictionaries = {
     infoFundingTitle: "Financiamiento",
     infoFunding: "Financiamiento proporcionado por el Estado de California.",
     infoDashboardGuideTitle: "Guía del Tablero",
-    infoDashboardGuide: "Una guía del tablero PFM se puede encontrar en YouTube aquí."
+    infoDashboardGuide: "Una guía del tablero PFM se puede encontrar en YouTube <a href="https://youtu.be/m8Nto5vhmKc">aquí</a>. Ten en cuenta que esto corresponde a una versión anterior del sitio web, pero es muy similar."
   }
 };
 
