@@ -52,7 +52,7 @@ const dictionaries = {
     infoFundingTitle: "Funding",
     infoFunding: "Funding provided by the State of California.",
     infoDashboardGuideTitle: "Dashboard Guide",
-    infoDashboardGuide: "A guide to the PFM dashboard can be found on YouTube <a href="https://youtu.be/m8Nto5vhmKc">here</a>. Note this is for a previous website version but it is largely similar."
+    infoDashboardGuide: "A guide to the PFM dashboard can be found on YouTube <a href="https://youtu.be/m8Nto5vhmKc">here</a>. Note this is for a previous website version but it is largely similar.",
   },
   es: {
     localeEnglish: "EN",
@@ -103,7 +103,7 @@ const dictionaries = {
     infoFundingTitle: "Financiamiento",
     infoFunding: "Financiamiento proporcionado por el Estado de California.",
     infoDashboardGuideTitle: "Guía del Tablero",
-    infoDashboardGuide: "Una guía del tablero PFM se puede encontrar en YouTube <a href="https://youtu.be/m8Nto5vhmKc">aquí</a>. Ten en cuenta que esto corresponde a una versión anterior del sitio web, pero es muy similar."
+    infoDashboardGuide: "Una guía del tablero PFM se puede encontrar en YouTube <a href="https://youtu.be/m8Nto5vhmKc">aquí</a>. Ten en cuenta que esto corresponde a una versión anterior del sitio web, pero es muy similar.",
   }
 };
 
