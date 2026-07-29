@@ -52,7 +52,8 @@ const dictionaries = {
     infoFundingTitle: "Funding",
     infoFunding: "Funding provided by the State of California.",
     infoDashboardGuideTitle: "Dashboard Guide",
-    infoDashboardGuide: "A guide to the PFM dashboard can be found on YouTube <a href=\"https://youtu.be/m8Nto5vhmKc\">here</a>. Note this is for a previous website version but it is largely similar.",
+    infoDashboardGuide: "A guide to the PFM dashboard can be found on YouTube {link}. Note this is for a previous website version but it is largely similar.",
+    infoDashboardGuideLinkLabel: "here",
   },
   es: {
     localeEnglish: "EN",
@@ -92,7 +93,7 @@ const dictionaries = {
     infoMediumRisk: "indica riesgo moderado, con valores entre 0.001% y 0.1% de aguas residuales.",
     infoLowRisk: "indica riesgo bajo, con valores menores a 0.001% de aguas residuales.",
     infoSwimmingLocationsTitle: "Sitios de Natación",
-    infoSwimmingLocations: "Cuatro sitios de natación de sur a norte: Playas de Tijuana, Imperial Beach Pier, Silver Strand y Coronado, Avenida Lunar están marcados con círculos. Haz clic en un círculo para ver un pronóstico más detallado en estos sitios. También hay un menú desplegable en el pronóstico detallado. En la gráfica, la concentración de aguas residuales se muestra en porcentajes, con el riesgo alto, moderado y bajo para nadadores indicado por el fondo de color.",
+    infoSwimmingLocations: "Cuatro sitios de natación de sur a norte: Playas de Tijuana, Imperial Beach Pier, Silver Strand y Coronado, Avenida Lunar están marcados con círculos. Haz clic en un círculo para ver un pronóstico más detallado en estos sitios. También se puede hacer clic en el nombre de la ubicación arriba del pronóstico detallado. En la gráfica de arriba, la concentración de aguas residuales se muestra en porcentajes, con el riesgo alto, moderado y bajo para nadadores indicado por el fondo de color.",
     infoRiskBasisTitle: "Base del Riesgo",
     infoRiskBasis: "El riesgo de enfermedad para nadadores se basa en el riesgo de enfermedad por norovirus de Feddersen et al. (2021). Un valor de 0.1% de aguas residuales corresponde a un riesgo de enfermedad de 10% y un valor de 0.001% corresponde a un riesgo de enfermedad de 1%.",
     infoOfficialConditionsTitle: "Condiciones Oficiales de Calidad del Agua",
@@ -103,7 +104,8 @@ const dictionaries = {
     infoFundingTitle: "Financiamiento",
     infoFunding: "Financiamiento proporcionado por el Estado de California.",
     infoDashboardGuideTitle: "Guía del Tablero",
-    infoDashboardGuide: "Una guía del tablero PFM se puede encontrar en YouTube <a href=\"https://youtu.be/m8Nto5vhmKc\">aquí</a>. Ten en cuenta que esto corresponde a una versión anterior del sitio web, pero es muy similar.",
+    infoDashboardGuide: "Una guía del tablero PFM se puede encontrar en YouTube {link}. Ten en cuenta que esto corresponde a una versión anterior del sitio web, pero es muy similar.",
+    infoDashboardGuideLinkLabel: "aquí",
   }
 };
 

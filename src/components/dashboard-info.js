@@ -14,6 +14,56 @@ function appendSection(container, titleKey, bodyKey) {
   container.append(section);
 }
 
+function isAllowedLinkProtocol(href) {
+  const parsed = new URL(href, window.location.origin);
+  return parsed.protocol === "https:" || parsed.protocol === "mailto:";
+}
+
+function appendSectionWithLinks(container, titleKey, bodyKey, linksByToken) {
+  const section = document.createElement("section");
+  section.className = "dashboard-info-section";
+
+  const heading = document.createElement("h3");
+  heading.textContent = t(titleKey);
+
+  const body = document.createElement("p");
+  const template = t(bodyKey);
+  const tokenPattern = /{[a-zA-Z0-9_]+}/g;
+  let cursor = 0;
+
+  for (const match of template.matchAll(tokenPattern)) {
+    const token = match[0];
+    const tokenStart = match.index ?? 0;
+
+    if (tokenStart > cursor) {
+      body.append(document.createTextNode(template.slice(cursor, tokenStart)));
+    }
+
+    const linkConfig = linksByToken[token];
+    if (!linkConfig || !isAllowedLinkProtocol(linkConfig.href)) {
+      body.append(document.createTextNode(token));
+    } else {
+      const link = document.createElement("a");
+      link.href = linkConfig.href;
+      link.textContent = t(linkConfig.labelKey);
+      if (linkConfig.href.startsWith("https://")) {
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+      }
+      body.append(link);
+    }
+
+    cursor = tokenStart + token.length;
+  }
+
+  if (cursor < template.length) {
+    body.append(document.createTextNode(template.slice(cursor)));
+  }
+
+  section.append(heading, body);
+  container.append(section);
+}
+
 function buildRiskList() {
   const list = document.createElement("ul");
   list.className = "info-risk-list";
@@ -124,7 +174,17 @@ export function renderDashboardInfo() {
     content.append(notesSection);
 
     appendSection(content, "infoFundingTitle", "infoFunding");
-    appendSection(content, "infoDashboardGuideTitle", "infoDashboardGuide");
+    appendSectionWithLinks(
+      content,
+      "infoDashboardGuideTitle",
+      "infoDashboardGuide",
+      {
+        "{link}": {
+          href: "https://youtu.be/m8Nto5vhmKc",
+          labelKey: "infoDashboardGuideLinkLabel"
+        }
+      }
+    );
   };
 
   subscribeToLocale(renderText);
