@@ -6,7 +6,7 @@ const dictionaries = {
   en: {
     localeEnglish: "EN",
     localeSpanish: "ES",
-    title: "[TEST VERSION] Pathogen Forecast Model Phase 1",
+    title: "Pathogen Forecast Model Phase 1",
     coastLabel: "San Diego / Tijuana Coast",
     updated: "Updated {time}",
     forecastTimeUnavailable: "Forecast time unavailable",
