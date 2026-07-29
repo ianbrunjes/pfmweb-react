@@ -1,67 +1,50 @@
 import {getLocale, setLocale, subscribeToLocale, t} from "../lib/i18n.js";
+import {dashboardGuideLinks} from "../lib/info-links.js";
+import {parseTemplateSegments} from "../lib/render-linked-text.js";
 
 function appendSection(container, titleKey, bodyKey) {
+  appendSectionWithContent(container, titleKey, () => {
+    const body = document.createElement("p");
+    body.textContent = t(bodyKey);
+    return [body];
+  });
+}
+
+function appendSectionWithContent(container, titleKey, buildContent) {
   const section = document.createElement("section");
   section.className = "dashboard-info-section";
 
   const heading = document.createElement("h3");
   heading.textContent = t(titleKey);
 
-  const body = document.createElement("p");
-  body.textContent = t(bodyKey);
-
-  section.append(heading, body);
+  const content = buildContent();
+  section.append(heading, ...(Array.isArray(content) ? content : [content]));
   container.append(section);
-}
-
-function isAllowedLinkProtocol(href) {
-  const parsed = new URL(href, window.location.origin);
-  return parsed.protocol === "https:" || parsed.protocol === "mailto:";
 }
 
 function appendSectionWithLinks(container, titleKey, bodyKey, linksByToken) {
-  const section = document.createElement("section");
-  section.className = "dashboard-info-section";
+  appendSectionWithContent(container, titleKey, () => {
+    const body = document.createElement("p");
+    const template = t(bodyKey);
+    const segments = parseTemplateSegments(template, linksByToken, (labelKey) => t(labelKey), window.location.origin);
 
-  const heading = document.createElement("h3");
-  heading.textContent = t(titleKey);
-
-  const body = document.createElement("p");
-  const template = t(bodyKey);
-  const tokenPattern = /{[a-zA-Z0-9_]+}/g;
-  let cursor = 0;
-
-  for (const match of template.matchAll(tokenPattern)) {
-    const token = match[0];
-    const tokenStart = match.index ?? 0;
-
-    if (tokenStart > cursor) {
-      body.append(document.createTextNode(template.slice(cursor, tokenStart)));
-    }
-
-    const linkConfig = linksByToken[token];
-    if (!linkConfig || !isAllowedLinkProtocol(linkConfig.href)) {
-      body.append(document.createTextNode(token));
-    } else {
-      const link = document.createElement("a");
-      link.href = linkConfig.href;
-      link.textContent = t(linkConfig.labelKey);
-      if (linkConfig.href.startsWith("https://")) {
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
+    for (const segment of segments) {
+      if (segment.type === "text") {
+        body.append(document.createTextNode(segment.value));
+      } else {
+        const link = document.createElement("a");
+        link.href = segment.href;
+        link.textContent = segment.label;
+        if (segment.href.startsWith("https://")) {
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+        }
+        body.append(link);
       }
-      body.append(link);
     }
 
-    cursor = tokenStart + token.length;
-  }
-
-  if (cursor < template.length) {
-    body.append(document.createTextNode(template.slice(cursor)));
-  }
-
-  section.append(heading, body);
-  container.append(section);
+    return [body];
+  });
 }
 
 function buildRiskList() {
@@ -147,44 +130,28 @@ export function renderDashboardInfo() {
 
     appendSection(content, "infoForecastOverviewTitle", "infoForecastOverview");
 
-    const riskSection = document.createElement("section");
-    riskSection.className = "dashboard-info-section";
-    const riskHeading = document.createElement("h3");
-    riskHeading.textContent = t("infoRiskColorsTitle");
-    const riskBody = document.createElement("p");
-    riskBody.textContent = t("infoRiskColors");
-    riskSection.append(riskHeading, riskBody, buildRiskList());
-    content.append(riskSection);
+    appendSectionWithContent(content, "infoRiskColorsTitle", () => {
+      const riskBody = document.createElement("p");
+      riskBody.textContent = t("infoRiskColors");
+      return [riskBody, buildRiskList()];
+    });
 
     appendSection(content, "infoSwimmingLocationsTitle", "infoSwimmingLocations");
     appendSection(content, "infoRiskBasisTitle", "infoRiskBasis");
     appendSection(content, "infoOfficialConditionsTitle", "infoOfficialConditions");
 
-    const notesSection = document.createElement("section");
-    notesSection.className = "dashboard-info-section";
-    const notesHeading = document.createElement("h3");
-    notesHeading.textContent = t("infoModelNotesTitle");
-    const notesBody = document.createElement("p");
-    notesBody.append(document.createTextNode(`${t("infoModelNotesPrefix")} `));
-    const emailLink = document.createElement("a");
-    emailLink.href = "mailto:ffeddersen@ucsd.edu";
-    emailLink.textContent = "ffeddersen@ucsd.edu";
-    notesBody.append(emailLink, document.createTextNode("."));
-    notesSection.append(notesHeading, notesBody);
-    content.append(notesSection);
+    appendSectionWithContent(content, "infoModelNotesTitle", () => {
+      const notesBody = document.createElement("p");
+      notesBody.append(document.createTextNode(`${t("infoModelNotesPrefix")} `));
+      const emailLink = document.createElement("a");
+      emailLink.href = "mailto:ffeddersen@ucsd.edu";
+      emailLink.textContent = "ffeddersen@ucsd.edu";
+      notesBody.append(emailLink, document.createTextNode("."));
+      return [notesBody];
+    });
 
     appendSection(content, "infoFundingTitle", "infoFunding");
-    appendSectionWithLinks(
-      content,
-      "infoDashboardGuideTitle",
-      "infoDashboardGuide",
-      {
-        "{link}": {
-          href: "https://youtu.be/m8Nto5vhmKc",
-          labelKey: "infoDashboardGuideLinkLabel"
-        }
-      }
-    );
+    appendSectionWithLinks(content, "infoDashboardGuideTitle", "infoDashboardGuide", dashboardGuideLinks);
   };
 
   subscribeToLocale(renderText);

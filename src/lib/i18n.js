@@ -52,13 +52,13 @@ const dictionaries = {
     infoFundingTitle: "Funding",
     infoFunding: "Funding provided by the State of California.",
     infoDashboardGuideTitle: "Dashboard Guide",
-    infoDashboardGuide: "A guide to the PFM dashboard can be found on YouTube {link}. Note this is for a previous website version but it is largely similar.",
+    infoDashboardGuide: "A guide to the PFM dashboard can be found on YouTube {yt_link}. Note this is for a previous website version but it is largely similar.",
     infoDashboardGuideLinkLabel: "here",
   },
   es: {
     localeEnglish: "EN",
     localeSpanish: "ES",
-    title: "[VERSIÓN DE PRUEBA] Modelo de Pronóstico de Patógenos Fase 1",
+    title: "Modelo de Pronóstico de Patógenos Fase 1",
     coastLabel: "Costa de San Diego / Tijuana",
     updated: "Actualizado {time}",
     forecastTimeUnavailable: "Hora del pronóstico no disponible",
@@ -104,7 +104,7 @@ const dictionaries = {
     infoFundingTitle: "Financiamiento",
     infoFunding: "Financiamiento proporcionado por el Estado de California.",
     infoDashboardGuideTitle: "Guía del Tablero",
-    infoDashboardGuide: "Una guía del tablero PFM se puede encontrar en YouTube {link}. Ten en cuenta que esto corresponde a una versión anterior del sitio web, pero es muy similar.",
+    infoDashboardGuide: "Una guía del tablero PFM se puede encontrar en YouTube {yt_link}. Ten en cuenta que esto corresponde a una versión anterior del sitio web, pero es muy similar.",
     infoDashboardGuideLinkLabel: "aquí",
   }
 };
