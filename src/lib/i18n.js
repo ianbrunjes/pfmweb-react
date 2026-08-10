@@ -45,7 +45,7 @@ const dictionaries = {
     infoRiskBasisTitle: "Risk Basis",
     infoRiskBasis: "Swimmer illness risk is based upon risk of illness from norovirus Feddersen et al. (2021). A value of 0.1% sewage corresponds to a 10% risk of swimmer illness and a value of 0.001% sewage corresponds to a 1% risk of swimmer illness.",
     infoOfficialConditionsTitle: "Official Water Quality Conditions",
-    infoOfficialConditions: "The county's official beach water quality conditions are reported by the County of San Diego Beach & Bay Water Quality Monitoring Program. Current advisories, warnings, and closures are updated daily and can be found at County of San Diego Beach Water Quality. The County of San Diego also maintains the Tijuana River Valley Sewage Crisis Environmental Dashboard.",
+    infoOfficialConditions: "The county's official beach water quality conditions are reported by the County of San Diego Beach & Bay Water Quality Monitoring Program. Current advisories, warnings, and closures are updated daily and can be found at {sdbeach_link}. The County of San Diego also maintains the {trdash_link}.",
     infoModelNotesTitle: "Model Notes",
     infoModelNotesPrefix: "This ocean forecast model is analogous to weather forecast models. Forecasts are typically 5 days long, but may be as short as 3 days. Occasionally if forecasts fail, the forecast date is a day (or more) behind. The dashed white rectangle box represents the region where the model is providing a forecast. Outside of this box, no forecast is made. This model uses NOAA forecasts of Tijuana River flow and estimates San Antonio de los Buenos outflow at Punta Bandera MX. As with any forecast, this forecast also has errors. Questions regarding the Pathogen Forecast Model should be addressed to",
     infoExperimental: "This forecast is experimental and may contain errors. Not for official use. Accuracy is not guaranteed.",
@@ -54,6 +54,8 @@ const dictionaries = {
     infoDashboardGuideTitle: "Dashboard Guide",
     infoDashboardGuide: "A guide to the PFM dashboard can be found on YouTube {yt_link}. Note this is for a previous website version but it is largely similar.",
     infoDashboardGuideLinkLabel: "here",
+    sdWaterQualityLinkLabel: "County of San Diego Beach Water Quality",
+    trDashLinkLabel: "Tijuana River Valley Sewage Crisis Environmental Dashboard"
   },
   es: {
     localeEnglish: "EN",
@@ -97,7 +99,7 @@ const dictionaries = {
     infoRiskBasisTitle: "Base del Riesgo",
     infoRiskBasis: "El riesgo de enfermedad para nadadores se basa en el riesgo de enfermedad por norovirus de Feddersen et al. (2021). Un valor de 0.1% de aguas residuales corresponde a un riesgo de enfermedad de 10% y un valor de 0.001% corresponde a un riesgo de enfermedad de 1%.",
     infoOfficialConditionsTitle: "Condiciones Oficiales de Calidad del Agua",
-    infoOfficialConditions: "Las condiciones oficiales de calidad del agua en playas del condado son reportadas por el Programa de Monitoreo de Calidad del Agua de Playas y Bahías del Condado de San Diego. Los avisos, advertencias y cierres actuales se actualizan diariamente y se pueden consultar en County of San Diego Beach Water Quality. El Condado de San Diego también mantiene el Tijuana River Valley Sewage Crisis Environmental Dashboard.",
+    infoOfficialConditions: "Las condiciones oficiales de calidad del agua en playas del condado son reportadas por el Programa de Monitoreo de Calidad del Agua de Playas y Bahías del Condado de San Diego. Los avisos, advertencias y cierres actuales se actualizan diariamente y se pueden consultar en {sdbeach_link}. El Condado de San Diego también mantiene el {trdash_link}.",
     infoModelNotesTitle: "Notas del Modelo",
     infoModelNotesPrefix: "Este modelo de pronóstico oceánico es análogo a los modelos de pronóstico del tiempo. Los pronósticos normalmente son de 5 días, pero pueden ser tan cortos como 3 días. En ocasiones, si los pronósticos fallan, la fecha del pronóstico queda un día atrasada. El rectángulo blanco punteado representa la región donde el modelo proporciona un pronóstico. Fuera de este rectángulo, no se realiza ningún pronóstico. Este modelo usa pronósticos de NOAA del flujo del Río Tijuana y estima el flujo de San Antonio de los Buenos en Punta Bandera, MX. Las preguntas sobre el Modelo de Pronóstico de Patógenos deben dirigirse a",
     infoExperimental: "Este pronóstico es experimental y puede contener errores. No es para uso oficial. No se garantiza su precisión.",
@@ -106,6 +108,8 @@ const dictionaries = {
     infoDashboardGuideTitle: "Guía del Tablero",
     infoDashboardGuide: "Una guía del tablero PFM se puede encontrar en YouTube {yt_link}. Ten en cuenta que esto corresponde a una versión anterior del sitio web, pero es muy similar.",
     infoDashboardGuideLinkLabel: "aquí",
+    sdWaterQualityLinkLabel: "County of San Diego Beach Water Quality",
+    trDashLinkLabel: "Tijuana River Valley Sewage Crisis Environmental Dashboard"
   }
 };
 

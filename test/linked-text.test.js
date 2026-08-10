@@ -22,6 +22,28 @@ test("parseTemplateSegments returns text and link segments", () => {
   ]);
 });
 
+test("parseTemplateSegments handles official conditions placeholders", () => {
+  const segments = parseTemplateSegments(
+    "Current advisories can be found at {sdbeach_link}. The County also maintains the {trdash_link}.",
+    {
+      "{sdbeach_link}": {href: "https://cosdapps.sandiegocounty.gov/sdbeachinfo/", labelKey: "sdWaterQualityLinkLabel"},
+      "{trdash_link}": {href: "https://www.sandiegocounty.gov/content/sdc/hhsa/programs/phs/community_epidemiology/south-region-health-concerns/Environmental-Dashboard.html", labelKey: "trDashLinkLabel"}
+    },
+    (labelKey) => ({
+      sdWaterQualityLinkLabel: "County of San Diego Beach Water Quality",
+      trDashLinkLabel: "Tijuana River Valley Sewage Crisis Environmental Dashboard"
+    }[labelKey] ?? labelKey)
+  );
+
+  assert.deepEqual(segments, [
+    {type: "text", value: "Current advisories can be found at "},
+    {type: "link", href: "https://cosdapps.sandiegocounty.gov/sdbeachinfo/", label: "County of San Diego Beach Water Quality"},
+    {type: "text", value: ". The County also maintains the "},
+    {type: "link", href: "https://www.sandiegocounty.gov/content/sdc/hhsa/programs/phs/community_epidemiology/south-region-health-concerns/Environmental-Dashboard.html", label: "Tijuana River Valley Sewage Crisis Environmental Dashboard"},
+    {type: "text", value: "."}
+  ]);
+});
+
 test("parseTemplateSegments ignores disallowed link protocols", () => {
   const segments = parseTemplateSegments(
     "Unsafe {link}",

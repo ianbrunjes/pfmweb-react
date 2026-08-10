@@ -138,7 +138,7 @@ export function renderDashboardInfo() {
 
     appendSection(content, "infoSwimmingLocationsTitle", "infoSwimmingLocations");
     appendSection(content, "infoRiskBasisTitle", "infoRiskBasis");
-    appendSection(content, "infoOfficialConditionsTitle", "infoOfficialConditions");
+    appendSectionWithLinks(content, "infoOfficialConditionsTitle", "infoOfficialConditions", dashboardGuideLinks);
 
     appendSectionWithContent(content, "infoModelNotesTitle", () => {
       const notesBody = document.createElement("p");
