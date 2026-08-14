@@ -3,6 +3,8 @@
   --med: #e6a817;
   --high: #d32f2f;
   --card-width: min(100%, 1560px);
+  --dashboard-map-ratio: 25%;
+  --dashboard-panel-ratio: 75%;
 }
 
 *,
@@ -205,19 +207,17 @@ html body #observablehq-main .observablehq--block {
 }
 
 .dashboard-info-body {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px 22px;
+  column-count: 2;
+  column-gap: 22px;
   padding: 22px;
 }
 
 .dashboard-info-section,
 .dashboard-info-callout {
-  margin: 0;
-}
-
-.dashboard-info-callout:first-child {
-  grid-column: 1 / -1;
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 18px;
+  break-inside: avoid;
 }
 
 .dashboard-info-section:last-child,
@@ -386,19 +386,29 @@ html body #observablehq-main .observablehq--block {
   width: 100%;
   display: grid;
   gap: 18px;
-  grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.72fr);
+  grid-template-columns: minmax(400px, var(--dashboard-map-ratio)) minmax(0, var(--dashboard-panel-ratio));
   align-items: stretch;
 }
 
-.dashboard-side-slot {
-  min-width: 0;
-}
-
 .dashboard-map-slot,
-.dashboard-side-slot {
+.dashboard-slider-slot,
+.dashboard-site-slot,
+.dashboard-chart-slot {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 18px;
+}
+
+.dashboard-map-slot {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+}
+
+.dashboard-slider-slot,
+.dashboard-site-slot,
+.dashboard-chart-slot {
+  grid-column: 2;
 }
 
 .map-card {
@@ -544,9 +554,26 @@ html body #observablehq-main .observablehq--block {
   font-size: 0.92rem;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 800px) {
   .dashboard-top-row {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dashboard-slider-slot {
+    order: 1;
+  }
+
+  .dashboard-map-slot {
+    order: 2;
+  }
+
+  .dashboard-site-slot {
+    order: 3;
+  }
+
+  .dashboard-chart-slot {
+    order: 4;
   }
 
   .map-card {
@@ -555,7 +582,7 @@ html body #observablehq-main .observablehq--block {
   }
 
   .dashboard-info-body {
-    grid-template-columns: 1fr;
+    column-count: 1;
   }
 }
 

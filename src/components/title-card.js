@@ -2,7 +2,7 @@ import {formatUpdatedTime, subscribeToForecastState} from "../state/forecast-sto
 import {renderLocaleControls} from "./dashboard-info.js";
 import {subscribeToLocale, t} from "../lib/i18n.js";
 
-export function renderTitleCard() {
+export function renderTitleCard({bannerElement} = {}) {
   const wrapper = document.createElement("section");
   wrapper.className = "title-card";
 
@@ -20,6 +20,9 @@ export function renderTitleCard() {
 
   mainRow.append(title, renderLocaleControls());
   content.append(eyebrow, mainRow);
+  if (bannerElement) {
+    content.append(bannerElement);
+  }
   wrapper.append(content);
 
   const renderText = () => {

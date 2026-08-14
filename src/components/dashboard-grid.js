@@ -1,5 +1,4 @@
 export function renderDashboardGrid({
-  bannerElement,
   mapElement,
   cardsElement,
   timeSlider,
@@ -14,13 +13,21 @@ export function renderDashboardGrid({
 
   const mapSlot = document.createElement("div");
   mapSlot.className = "dashboard-map-slot";
-  mapSlot.append(bannerElement, mapElement);
+  mapSlot.append(mapElement);
 
-  const sideSlot = document.createElement("div");
-  sideSlot.className = "dashboard-side-slot";
-  sideSlot.append(timeSlider, cardsElement, chartElement);
+  const sliderSlot = document.createElement("div");
+  sliderSlot.className = "dashboard-slider-slot";
+  sliderSlot.append(timeSlider);
 
-  topRow.append(mapSlot, sideSlot);
+  const siteSlot = document.createElement("div");
+  siteSlot.className = "dashboard-site-slot";
+  siteSlot.append(cardsElement);
+
+  const chartSlot = document.createElement("div");
+  chartSlot.className = "dashboard-chart-slot";
+  chartSlot.append(chartElement);
+
+  topRow.append(mapSlot, sliderSlot, siteSlot, chartSlot);
   wrapper.append(topRow, infoElement);
   return wrapper;
 }

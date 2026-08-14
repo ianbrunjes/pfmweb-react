@@ -10,15 +10,14 @@ import {renderTitleCard} from "./components/title-card.js";
 
 await initializeForecastState();
 
-const titleCard = renderTitleCard();
-const timeSlider = renderTimeSlider();
 const bannerElement = renderExperimentalBanner();
+const titleCard = renderTitleCard({bannerElement});
+const timeSlider = renderTimeSlider();
 const mapElement = await renderSanDiegoMap();
 const cardsElement = renderSiteCards();
 const chartElement = renderForecastChart();
 const infoElement = renderDashboardInfo();
 const dashboardGrid = renderDashboardGrid({
-  bannerElement,
   mapElement,
   cardsElement,
   timeSlider,

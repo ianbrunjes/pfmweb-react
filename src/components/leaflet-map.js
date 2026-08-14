@@ -71,7 +71,9 @@ export async function renderSanDiegoMap() {
     const map = L.map(mapElement, {
       zoomControl: true,
       attributionControl: true,
-      keyboard: false
+      keyboard: false,
+      zoomSnap: 0.5,
+      zoomDelta: 0.5
     }).setView([32.58, -117.18], 14);
     mapElement.setAttribute("tabindex", "-1");
 
@@ -173,8 +175,6 @@ export async function renderSanDiegoMap() {
       });
     };
 
-    //TODO image overlay has weird border
-    //TODO verify contour styles and matching colorbar
     subscribeToForecastState((snapshot) => {
       if (snapshot.bounds && !imageOverlay) {
         const bounds = [
@@ -188,7 +188,7 @@ export async function renderSanDiegoMap() {
         }).addTo(map);
 
         map.fitBounds(bounds, {
-          padding: [40, 40],
+          padding: [0, 0],
           animate: false
         });
 

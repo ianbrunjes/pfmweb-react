@@ -136,8 +136,8 @@ export function renderDashboardInfo() {
       return [riskBody, buildRiskList()];
     });
 
-    appendSection(content, "infoSwimmingLocationsTitle", "infoSwimmingLocations");
     appendSection(content, "infoRiskBasisTitle", "infoRiskBasis");
+    appendSection(content, "infoSwimmingLocationsTitle", "infoSwimmingLocations");
     appendSectionWithLinks(content, "infoOfficialConditionsTitle", "infoOfficialConditions", dashboardGuideLinks);
 
     appendSectionWithContent(content, "infoModelNotesTitle", () => {
@@ -150,8 +150,8 @@ export function renderDashboardInfo() {
       return [notesBody];
     });
 
-    appendSection(content, "infoFundingTitle", "infoFunding");
     appendSectionWithLinks(content, "infoDashboardGuideTitle", "infoDashboardGuide", dashboardGuideLinks);
+    appendSection(content, "infoFundingTitle", "infoFunding");
   };
 
   subscribeToLocale(renderText);
