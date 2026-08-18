@@ -27,7 +27,11 @@ export function renderDashboardGrid({
   chartSlot.className = "dashboard-chart-slot";
   chartSlot.append(chartElement);
 
-  topRow.append(mapSlot, sliderSlot, siteSlot, chartSlot);
+  const controlsPlotSlot = document.createElement("div");
+  controlsPlotSlot.className = "dashboard-controls-plot-slot";
+  controlsPlotSlot.append(sliderSlot, siteSlot, chartSlot);
+
+  topRow.append(mapSlot, controlsPlotSlot);
   wrapper.append(topRow, infoElement);
   return wrapper;
 }

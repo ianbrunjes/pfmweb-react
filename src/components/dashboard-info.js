@@ -142,7 +142,25 @@ export function renderDashboardInfo() {
 
     appendSectionWithContent(content, "infoModelNotesTitle", () => {
       const notesBody = document.createElement("p");
-      notesBody.append(document.createTextNode(`${t("infoModelNotesPrefix")} `));
+      const template = t("infoModelNotesPrefix");
+      const segments = parseTemplateSegments(template, dashboardGuideLinks, (labelKey) => t(labelKey), window.location.origin);
+
+      for (const segment of segments) {
+        if (segment.type === "text") {
+          notesBody.append(document.createTextNode(segment.value));
+        } else {
+          const link = document.createElement("a");
+          link.href = segment.href;
+          link.textContent = segment.label;
+          if (segment.href.startsWith("https://")) {
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+          }
+          notesBody.append(link);
+        }
+      }
+
+      notesBody.append(document.createTextNode(" "));
       const emailLink = document.createElement("a");
       emailLink.href = "mailto:ffeddersen@ucsd.edu";
       emailLink.textContent = "ffeddersen@ucsd.edu";
