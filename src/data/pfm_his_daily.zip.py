@@ -13,10 +13,7 @@ import xarray as xr
 from PIL import Image
 from scipy.spatial import KDTree
 
-
-TEMP_FILE = "./web_data_latest.nc"
-LOCAL_FILE = "/project/web_data_latest.nc"
-REMOTE_URL = "https://falk.ucsd.edu/PFM_Forecast/LV4_His/web_data_latest.nc"
+from SOURCE_FILE_CONFIG import LOCAL_FILE, REMOTE_URL, TEMP_FILE
 
 BASE_DATETIME = datetime(1999, 1, 1)
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
