@@ -2,7 +2,6 @@ import io
 import json
 import os
 import sys
-import urllib.request
 import zipfile
 from datetime import datetime, timedelta
 
@@ -13,7 +12,7 @@ import xarray as xr
 from PIL import Image
 from scipy.spatial import KDTree
 
-from SOURCE_FILE_CONFIG import LOCAL_FILE, REMOTE_URL, TEMP_FILE
+from SOURCE_FILE_CONFIG import LOCAL_FILE
 
 BASE_DATETIME = datetime(1999, 1, 1)
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -44,8 +43,7 @@ def load_dataset():
     if os.path.isfile(LOCAL_FILE):
         return xr.open_dataset(LOCAL_FILE, decode_timedelta=False)
 
-    urllib.request.urlretrieve(REMOTE_URL, TEMP_FILE)
-    return xr.open_dataset(TEMP_FILE, decode_timedelta=False)
+    raise FileNotFoundError(f"Could not find local file: {LOCAL_FILE}")
 
 
 def build_timestamps(raw_times):
