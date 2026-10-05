@@ -165,7 +165,7 @@ export function renderForecastChart() {
       });
     }
 
-    const nextDataKey = `${currentState.times.length}|${currentState.sites.names.join("\u0000")}`;
+    const nextDataKey = `${currentState.selectedFile ?? ""}|${currentState.times[0] ?? ""}|${currentState.times.length}|${currentState.sites.names.join("\u0000")}`;
     if (forceLabels || chartDataKey !== nextDataKey) {
       chart.data.labels = currentState.times.map(formatShortLabel);
       chart.data.datasets.forEach((dataset, index) => {
