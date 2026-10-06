@@ -4,4 +4,3 @@ node_modules
 dist
 web_data_latest.nc
 src/data/web_data_latest.nc
-/dockerfiles
