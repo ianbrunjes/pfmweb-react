@@ -1,4 +1,4 @@
-import {loadForecastAssets} from "../data/forecast-assets.js";
+import {loadForecastAssets, loadForecastFileList} from "../data/forecast-assets.js";
 import {
   buildFallbackTimes,
   createEmptyShoreline,
@@ -14,6 +14,7 @@ let currentFrame = 0;
 let currentSite = 0;
 let initialized = false;
 let initializePromise = null;
+let activeLoadToken = 0;
 
 const state = createFallbackForecastState();
 
@@ -31,6 +32,31 @@ function preserveScrollPosition() {
     window.scrollTo(x, y);
     window.requestAnimationFrame(() => window.scrollTo(x, y));
   };
+}
+
+function getRequestedFileFromUrl() {
+  if (typeof window === "undefined") return "";
+  try {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("file") ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function syncSelectedFileToUrl(fileName) {
+  if (typeof window === "undefined" || !window.history?.replaceState) return;
+  try {
+    const url = new URL(window.location.href);
+    if (fileName && fileName !== state.defaultFile) {
+      url.searchParams.set("file", fileName);
+    } else {
+      url.searchParams.delete("file");
+    }
+    window.history.replaceState(null, "", url);
+  } catch {
+    // Ignore URL update errors in non-browser environments
+  }
 }
 
 function normalizeIso(isoString) {
@@ -94,6 +120,11 @@ export function clampSiteIndex(nextSite, siteCount = state.sites.names.length) {
 export function getForecastState() {
   return {
     ...state,
+    availableFiles: state.availableFiles,
+    selectedFile: state.selectedFile,
+    defaultFile: state.defaultFile,
+    loadingFile: state.loadingFile,
+    loadError: state.loadError,
     sites: state.sites,
     shoreline: state.shoreline,
     currentFrame,
@@ -144,13 +175,62 @@ export function setCurrentSite(nextSite) {
   restoreScroll?.();
 }
 
+export async function setSelectedFile(nextFile) {
+  const targetFile = String(nextFile ?? "").trim();
+  if (!targetFile) return getForecastState();
+  if (targetFile === state.selectedFile && !state.loadingFile) {
+    return getForecastState();
+  }
+
+  const requestToken = ++activeLoadToken;
+  const restoreScroll = preserveScrollPosition();
+  state.selectedFile = targetFile;
+  state.loadingFile = true;
+  state.loadError = null;
+  syncSelectedFileToUrl(targetFile);
+  notify();
+
+  try {
+    const assets = await loadForecastAssets(targetFile, state.defaultFile);
+    if (requestToken !== activeLoadToken) return getForecastState();
+
+    applyForecastAssets(assets);
+    if (!state.times.length || !state.frameUrls.length) {
+      throw new Error("Forecast assets are missing.");
+    }
+    currentFrame = 0;
+    currentSite = clampSiteIndex(currentSite);
+  } catch (error) {
+    if (requestToken !== activeLoadToken) return getForecastState();
+    state.loadError = error instanceof Error ? error.message : "Failed to load forecast file.";
+  } finally {
+    if (requestToken === activeLoadToken) {
+      state.loadingFile = false;
+      notify();
+      restoreScroll?.();
+    }
+  }
+
+  return getForecastState();
+}
+
 export async function initializeForecastState() {
   if (initialized) return getForecastState();
   if (initializePromise) return initializePromise;
 
   initializePromise = (async () => {
+    const {defaultFile, files} = await loadForecastFileList();
+    state.availableFiles = files;
+    state.defaultFile = defaultFile;
+
+    const urlFile = getRequestedFileFromUrl();
+    const initialFile = urlFile && files.includes(urlFile) ? urlFile : defaultFile;
+    state.selectedFile = initialFile;
+    state.loadingFile = true;
+    state.loadError = null;
+
     try {
-      const assets = await loadForecastAssets();
+      const assets = await loadForecastAssets(initialFile, defaultFile);
       applyForecastAssets(assets);
 
       if (!state.times.length || !state.frameUrls.length) {
@@ -158,6 +238,8 @@ export async function initializeForecastState() {
       }
     } catch {
       resetForecastData();
+    } finally {
+      state.loadingFile = false;
     }
 
     initialized = true;

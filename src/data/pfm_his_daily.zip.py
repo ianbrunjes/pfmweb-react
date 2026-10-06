@@ -1,6 +1,9 @@
+import argparse
+from concurrent.futures import ThreadPoolExecutor
 import io
 import json
 import os
+import re
 import sys
 import zipfile
 from datetime import datetime, timedelta
@@ -12,7 +15,18 @@ import xarray as xr
 from PIL import Image
 from scipy.spatial import KDTree
 
-from SOURCE_FILE_CONFIG import LOCAL_FILE
+
+import SOURCE_FILE_CONFIG as config
+
+LOCAL_FILE = getattr(config, "LOCAL_FILE", "")
+REMOTE_URL = getattr(config, "REMOTE_URL", "")
+TEMP_FILE = getattr(config, "TEMP_FILE", "./web_data_latest.nc")
+ARCHIVE_DIR = getattr(
+    config,
+    "ARCHIVE_DIR",
+    os.path.dirname(LOCAL_FILE) or "/dataSIO/PFM_Simulations/Archive/web",
+)
+FILE_ID_PATTERN = re.compile(r"^(?:web_data_)?(\d{10})(?:\.nc)?$")
 
 BASE_DATETIME = datetime(1999, 1, 1)
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -39,9 +53,36 @@ def parse_site_names(site_info):
     return [name.strip() for name in site_info.split(",") if name.strip()]
 
 
-def load_dataset():
-    if os.path.isfile(LOCAL_FILE):
-        return xr.open_dataset(LOCAL_FILE, decode_timedelta=False)
+def resolve_requested_file(file_arg):
+    if not file_arg:
+        return LOCAL_FILE
+
+    base = os.path.basename(file_arg.strip())
+    match = FILE_ID_PATTERN.match(base)
+    filename = f"web_data_{match.group(1)}.nc" if match else (
+        base if base.endswith(".nc") else f"{base}.nc"
+    )
+
+    candidate = os.path.join(ARCHIVE_DIR, filename)
+    if os.path.isfile(candidate):
+        return candidate
+
+    local_dir = os.path.dirname(LOCAL_FILE)
+    if local_dir:
+        fallback = os.path.join(local_dir, filename)
+        if os.path.isfile(fallback):
+            return fallback
+
+    return candidate
+
+
+def load_dataset(file_arg=None):
+    target_file = resolve_requested_file(file_arg)
+    if target_file and os.path.isfile(target_file):
+        return xr.open_dataset(target_file, decode_timedelta=False)
+
+    if file_arg:
+        raise FileNotFoundError(f"NetCDF file not found: {target_file}")
 
     raise FileNotFoundError(f"Could not find local file: {LOCAL_FILE}")
 
@@ -159,15 +200,23 @@ def write_forecast_zip(ds):
     contour_levels = np.arange(CONTOUR_MIN, CONTOUR_MAX, CONTOUR_INTERVAL)
     contour_norm = mcolors.BoundaryNorm(contour_levels, CONTOUR_CMAP.N, extend="max")
 
+    map_l10_dye_tot = ds["map_l10_dye_tot"].values
+    with ThreadPoolExecutor() as executor:
+        frames = list(
+            executor.map(
+                lambda idx: render_map_frame(
+                    map_l10_dye_tot[idx],
+                    frame_grid,
+                    contour_levels,
+                    contour_norm,
+                ),
+                range(len(timestamps)),
+            )
+        )
+
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, "w") as zip_file:
-        for index in range(len(timestamps)):
-            frame = render_map_frame(
-                ds["map_l10_dye_tot"][index, :, :].values,
-                frame_grid,
-                contour_levels,
-                contour_norm,
-            )
+        for index, frame in enumerate(frames):
             zip_file.writestr(
                 f"map/frame_{index:03d}.png",
                 frame,
@@ -186,4 +235,13 @@ def write_forecast_zip(ds):
     sys.stdout.buffer.write(zip_buffer.getvalue())
 
 
-write_forecast_zip(load_dataset())
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("--file", default=None)
+    args, _ = parser.parse_known_args(argv)
+    return args
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    write_forecast_zip(load_dataset(args.file))

@@ -101,6 +101,7 @@ export function renderTimeSlider() {
   });
 
   subscribeToForecastState((state) => {
+    if (state.loadingFile && playing) stopPlayback();
     currentFrame = state.currentFrame;
     slider.max = String(Math.max(0, getFrameCount() - 1));
     slider.value = String(state.currentFrame);

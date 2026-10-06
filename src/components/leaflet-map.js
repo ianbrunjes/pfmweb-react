@@ -209,6 +209,12 @@ export async function renderSanDiegoMap() {
       }
 
       if (imageOverlay && snapshot.frameUrls.length) {
+        if (snapshot.bounds) {
+          imageOverlay.setBounds([
+            [snapshot.bounds.south, snapshot.bounds.west],
+            [snapshot.bounds.north, snapshot.bounds.east]
+          ]);
+        }
         imageOverlay.setUrl(getFrameUrl(snapshot.currentFrame));
       }
 
