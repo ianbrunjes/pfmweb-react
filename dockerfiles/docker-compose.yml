@@ -1,0 +1,16 @@
+services:
+  pfmweb-docker:
+    image: ghcr.io/observablehq/framework-runtime:latest
+    container_name: pfmweb-docker
+    user: root
+    volumes:
+      - pfmweb-public:/project/public/
+      - /srv/pfmweb/entrypoint.sh:/project/entrypoint.sh
+      - /dataSIO/PFM_Simulations/Archive/for_web/web_data_latest.nc:/project/web_data_latest.nc
+    working_dir: /project
+    entrypoint: ["/bin/sh", "/project/entrypoint.sh"]
+    command: []
+    restart: no
+
+volumes:
+  pfmweb-public:
