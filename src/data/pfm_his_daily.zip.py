@@ -5,7 +5,6 @@ import json
 import os
 import re
 import sys
-import urllib.request
 import zipfile
 from datetime import datetime, timedelta
 
@@ -15,6 +14,7 @@ import numpy as np
 import xarray as xr
 from PIL import Image
 from scipy.spatial import KDTree
+
 
 import SOURCE_FILE_CONFIG as config
 
@@ -84,8 +84,7 @@ def load_dataset(file_arg=None):
     if file_arg:
         raise FileNotFoundError(f"NetCDF file not found: {target_file}")
 
-    urllib.request.urlretrieve(REMOTE_URL, TEMP_FILE)
-    return xr.open_dataset(TEMP_FILE, decode_timedelta=False)
+    raise FileNotFoundError(f"Could not find local file: {LOCAL_FILE}")
 
 
 def build_timestamps(raw_times):
