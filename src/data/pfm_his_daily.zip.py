@@ -60,7 +60,7 @@ def build_sites(ds, site_names):
         "lons": ds["sites_lon"].values.tolist(),
         "risk": [[int(value) for value in row] for row in ds["sites_risk"].values],
         "dye": [[float(f"{value:.6e}") for value in row] for row in ds["sites_dye_tot"].values],
-        "l10": [[round(float(value), 3) for value in row] for row in ds["sites_l10_dye_tot"].values],
+        "l10": [[round(float(value), 3) for value in row] for row in ds["sites_l10_Ent_dye"].values],
     }
 
 
@@ -68,7 +68,7 @@ def build_shoreline(ds):
     return {
         "lats": [round(float(value), 5) for value in ds["shoreline_lat"].values],
         "lons": [round(float(value), 5) for value in ds["shoreline_lon"].values],
-        "risk": [[int(value) for value in row] for row in ds["shoreline_risk"].values],
+        "risk": [[int(value) for value in row] for row in ds["shoreline_risk_alpha"].values],
     }
 
 
@@ -180,7 +180,7 @@ def write_forecast_zip(ds):
             "times": timestamps,
             "bounds": bounds,
             "domain": build_domain(map_lat, map_lon),
-            "thresholds": ds["thresh_holds"][:].values.tolist(),
+            "thresholds": np.log10( ds["thresh_holds_Ent"][:].values).tolist(),
         })
 
     sys.stdout.buffer.write(zip_buffer.getvalue())

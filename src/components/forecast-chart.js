@@ -105,17 +105,17 @@ export function renderForecastChart() {
               grid: {color: "#f0f0f0"}
             },
             y: {
-              min: -7,
-              max: -1,
+              min: 1,
+              max: 7,
               ticks: {
                 font: {size: 10},
                 color: "#6b7280",
                 stepSize: 1,
                 callback: (value) => {
-                  const pct = Math.pow(10, value + 2);
-                  if (pct >= 1) return `${pct.toFixed(0)}%`;
+                  const pct = Math.pow(10, value);
+                  //if (pct >= 1) return `${pct.toFixed(0)}%`;
                   const decimals = Math.max(0, -Math.floor(Math.log10(pct)));
-                  return `${pct.toFixed(decimals)}%`;
+                  return `${pct.toFixed(decimals)}`;
                 }
               },
               grid: {color: "#f0f0f0"}
@@ -128,6 +128,8 @@ export function renderForecastChart() {
             const thresholds = getForecastState().thresholds;
             if (!thresholds || thresholds.length < 2) return;
             const {ctx, chartArea, scales: {y}} = instance;
+            //const tLow = 1413;
+            //const tHigh = 100000;
             const [tLow, tHigh] = thresholds;
             const clamp = (value) => Math.max(chartArea.top, Math.min(chartArea.bottom, value));
             const yLow = clamp(y.getPixelForValue(tLow));
