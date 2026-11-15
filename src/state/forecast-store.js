@@ -11,7 +11,7 @@ import {clampIndex} from "./forecast-state-utils.js";
 const listeners = new Set();
 
 let currentFrame = 0;
-let currentSite = 0;
+let currentSite = 1;
 let initialized = false;
 let initializePromise = null;
 
