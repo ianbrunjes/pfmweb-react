@@ -33,7 +33,7 @@ const dictionaries = {
     infoForecastOverviewTitle: "Forecast Overview",
     infoForecastOverview: "Forecasts of sewage at the ocean surface are provided for the San Diego/Tijuana border region. In the map on the left, colored contour lines represent the percentage of sewage at the ocean surface. A value of 100% is pure sewage and a value of zero is pure ocean water. Contours go from a high of 10% sewage to a low of 0.0005% sewage.",
     infoRiskColorsTitle: "Shoreline Risk Colors",
-    infoRiskColors: "The color at the shoreline indicates swimmer illness risk based on sewage concentration.",
+    infoRiskColors: "The color at the shoreline indicates swimmer illness risk based on sewage concentration converted to Enterococcus concentration (copies/100 mL) to match the San Diego County water quality sampling numbers.",
     red: "Red",
     yellow: "Yellow",
     green: "Green",
