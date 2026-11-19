@@ -29,6 +29,11 @@ export function createEmptyShoreline() {
 
 export function createFallbackForecastState() {
   return {
+    availableFiles: [],
+    selectedFile: "",
+    defaultFile: "",
+    loadingFile: false,
+    loadError: null,
     times: buildFallbackTimes(),
     frameUrls: [],
     bounds: null,

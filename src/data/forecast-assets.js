@@ -1,6 +1,11 @@
-import {FileAttachment} from "observablehq:stdlib";
+import {FileAttachment, registerFile} from "observablehq:stdlib";
+import {getForecastFileId} from "../state/forecast-state-utils.js";
 
-const forecastZipFile = FileAttachment("./pfm_his_daily.zip");
+const forecastFilesAttachment = FileAttachment("./forecast_files.json");
+const defaultForecastZipFile = FileAttachment("./pfm_his_daily.zip");
+const assetCache = new Map();
+
+export {getForecastFileId};
 
 function getFrameNames(zip) {
   return zip.filenames
@@ -8,8 +13,36 @@ function getFrameNames(zip) {
     .sort();
 }
 
-export async function loadForecastAssets() {
-  const zip = await forecastZipFile.zip();
+export async function loadForecastFileList() {
+  try {
+    const data = await forecastFilesAttachment.json();
+    const files = Array.isArray(data?.files) ? data.files : [];
+    const defaultFile = data?.defaultFile || files[0] || "";
+    return {defaultFile, files};
+  } catch {
+    return {defaultFile: "", files: []};
+  }
+}
+
+function getZipAttachment(fileName, defaultFile = "") {
+  const fileId = getForecastFileId(fileName);
+  if (!fileId || (defaultFile && fileName === defaultFile)) {
+    return defaultForecastZipFile;
+  }
+  return registerFile(`./pfm_his_daily_${fileId}.zip`, {
+    path: `/_file/data/pfm_his_daily_${fileId}.zip`,
+    mimeType: "application/zip"
+  });
+}
+
+export async function loadForecastAssets(fileName = "", defaultFile = "") {
+  const cacheKey = fileName || defaultFile || "__default__";
+  if (assetCache.has(cacheKey)) {
+    return assetCache.get(cacheKey);
+  }
+
+  const zipAttachment = getZipAttachment(fileName, defaultFile);
+  const zip = await zipAttachment.zip();
 
   const [times, sites, shoreline] = await Promise.all([
     zip.file("times.json").json(),
@@ -21,5 +54,7 @@ export async function loadForecastAssets() {
     getFrameNames(zip).map((name) => zip.file(name).url())
   );
 
-  return {times, sites, shoreline, frameUrls};
+  const assets = {times, sites, shoreline, frameUrls};
+  assetCache.set(cacheKey, assets);
+  return assets;
 }
